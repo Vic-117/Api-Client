@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    </head>
+    <body class="container">
+        <br>
+
+        <div class="row">
+
+            <div class="container">
+
+
+                <h2 class="mb-3 fw-bold">LISTA DE USUARIOS</h2>
+
+
+            </div>
+
+
+
+
+
+            <!--BARRA DE BUSQUEDA-->
+
+            <!--            <section class="navbar bg-body-tertiary row">
+                            <form class="col-6" method="post" th:object="${UsuarioBusqueda}" th:action="@{Usuario/Search}">
+                                <div class="input-group ">
+                                    <label class="input-group-text col-1">BUSCAR</label> 
+                                    <input type="text" class="form-control " placeholder="Nombre"  th:field="*{Nombre}"/>
+                                    <input type="text" class="form-control " placeholder="Apellido Paterno"  th:field="*{ApellidoPaterno}"/>
+                                    <input type="text" class="form-control " placeholder="Apellido Materno" th:field="*{ApellidoMaterno}" />
+                                    <input type="text" class="form-control" placeholder="Rol" th:field="*{rol.nombre}"/>
+            
+                                    <select class="form-control"  th:field="*{rol.idRol}">
+                                        <option value="0">Selecciona un rol</option>
+                                        <option th:each="rol:${Roles}"  th:text="${rol.nombre}" th:value="${rol.idRol}"></option>
+                                    </select>    
+            
+            
+                                    <button type="submit" class="btn btn-warning"><i class="bi bi-search"></i></button>
+                                </div>
+            
+                            </form>
+            
+                            <div class="input-group col-6">
+            
+                                <a th:href='@{/Usuario/CargaMasiva}' class="btn btn-outline-success ">Carga masiva</a>
+                                <br>
+                                <a th:href='@{/Usuario/UsuarioDireccionForm}' class="btn btn-outline-success">Agregar usuario</a>
+                            </div>
+                        </section>-->
+
+            <section class="navbar bg-body-tertiary" >
+                <div class="container-fluid">
+                    <div class="row w-100 align-items-center g-3"> 
+
+                        <form class="col-12 col-lg-9" method="post" th:object="${UsuarioBusqueda}" th:action="@{/Usuario/Search}">
+                            <div class="input-group">
+                                <label class="input-group-text">BUSCAR</label>
+
+                                <input type="text" class="form-control col-3" placeholder="Nombre" th:field="*{Nombre}"/>
+                                <input type="text" class="form-control col-3" placeholder="Apellido Paterno" th:field="*{ApellidoPaterno}"/>
+                                <input type="text" class="form-control d-none d-md-block col-3" placeholder="Apellido Materno" th:field="*{ApellidoMaterno}" /> <select class="form-control" th:field="*{rol.idRol}">
+                                    <option value="0" class="col-3">Selecciona un rol</option>
+                                    <option th:each="rol:${Roles}" th:text="${rol.nombre}" th:value="${rol.idRol}"></option>
+                                </select>
+
+                                <button type="submit" class="btn btn-warning"><i class="bi bi-search"></i></button>
+                                <a class="btn btn-dark me-1" th:href="@{/Usuario}"> <i class="bi bi-arrow-counterclockwise"></i></a>
+                            </div>
+                        </form>
+
+                        <div class="col-12 col-lg-3 d-flex justify-content-end align-items-center">
+
+                            <a th:href='@{/Usuario/CargaMasiva}' class="btn btn-outline-success me-1">Carga masiva</a>
+                            <a th:href='@{/Usuario/UsuarioDireccionForm}' class="btn btn-outline-success">Agregar usuario</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!--TABLA DE USUARIOS-->
+            <table class="table  table-hover table-responsive align-middle  table-bordered  col-sm-12 rounded" >
+                <!--cabeceras de tabla-->
+                <thead class="table-dark text-center"style="color:#054070">
+                <th class="col-2" >Nombre Completo</th>
+                <th class="col-4">Información</th>
+                <th class="col-4" >Direccion</th>
+                <th class="col-1" style="color:green">Acciones</th> 
+                <th class="col-1" style="color:green">Desactivar</th> 
+                </thead>
+
+                <!--filas de la tabla-->
+                <tr th:each = "usuario:${Usuarios}" th:id="|filasTabla${usuario.idUsuario}|">
+
+                    <!--celdas/datos de la tabla-->
+                    <td th:text="|${usuario.nombre} ${usuario.apellidoPaterno} ${usuario.apellidoMaterno}|"/>
+
+                    <td th:utext="|<b> Correo:</b> ${usuario.email}.<br><b>Fecha de Nacimiento:</b> ${usuario.fechaNacimiento}<br><b>Sexo:</b> ${usuario.sexo} <br><b>Telefono:</b> 
+                        ${usuario.telefono}<br><b>Celular:</b> ${usuario.celular} <br><b>Curp:</b> ${usuario.curp}<br><b>Rol:</b> ${usuario.rol.nombre} |"/>
+
+                    <td >
+                        <ul th:if="${usuario.Direcciones !=null}" >
+                            <li th:each = "direccion:${usuario.Direcciones}" th:text="|Calle. ${direccion.calle}. No.Interior. ${direccion.numeroInterior}. No.Exterior. ${direccion.numeroExterior}. CodPos. ${direccion.colonia.CodigoPostal}. col. ${direccion.colonia.nombre}|"></li>
+                        </ul>
+                        <ul th:unless="${usuario.Direcciones ==null}" >
+                            <p ></p>
+                        </ul>
+
+
+
+                    <td class="text-center" th:id=|td${usuario.idUsuario}| >
+                        <!--<button class="btn btn-danger" th:href="@{Usuario/delete/{idUsuario} (idUsuario = ${usuario.IdUsuario})}">-->
+                        <!--Llamamos a la funcion de forma dinamica con thymeleaf-->
+                        <button class="btn border-danger mb-2 col-8" th:if="${usuario.estatus}==1" th:onclick="|EliminarUsuario(${usuario.idUsuario})|">
+                            <i class="bi bi-trash-fill"></i>
+                        </button>
+
+                        <a href="url" class="btn border-info col-8" th:if="${usuario.estatus}==1" th:href="@{/Usuario/detail/{idUsuario} (idUsuario=${usuario.idUsuario})}">
+
+
+                            <i class="bi bi-vector-pen"></i>
+                        </a>
+
+
+
+                    </td>
+
+                    <td class="text-center" style="background-color: aliceblue">
+                        <div class="form-check form-switch text-center col-12">
+                            <input class="form-check-input" type="checkbox" role="switch" th:id="'switch'+${usuario.idUsuario}"  th:checked="${usuario.estatus} == 1"  th:onchange="|mensajeCheck(this,'${usuario.estatus}' , '${usuario.idUsuario}' )|" >
+
+                        </div>
+                    </td>
+
+
+                </tr>
+
+
+
+            </table>
+
+        </div>
+        <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+
+        <script th:if="${resultDelete}" th:inline="javascript">
+            console.log([[${resultDelete}]]);
+            if ([[${resultDelete.Correct}]]){
+            Swal.fire({
+            position: "top-end",
+                    icon: "success",
+                    title: "Realizado",
+                    text:[[${resultDelete.Object}]],
+            });
+            } else{
+            Swal.fire({
+            position: "top-end",
+                    icon: "Error",
+                    title: "We have some problems...",
+                    text:[[${resultDelete.Object}]],
+            });
+            }
+        </script>
+
+        <script>
+            function EliminarUsuario(idUsuario) {
+            Swal.fire({
+            title: "Seguro de que quieres continuar?",
+                    text: "No podrás deshacer esta acción ",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "¡Borrar!"
+            }).then((result) => {
+            if (result.isConfirmed) {
+
+            window.location.href = "/Usuario/delete/" + idUsuario;
+            }
+            });
+            }
+
+        </script>
+
+        <script th:if="${ResultAgregar}" th:inline="javascript">
+
+
+
+
+            Swal.fire({
+            position: "top-end",
+                    icon: "success",
+                    title: [[${ResultAgregar}]],
+                    showConfirmButton: false,
+                    timer: 1500
+            });
+        </script>
+
+
+        <script th:inline="javascript">
+
+
+            function mensajeCheck(thisElement, estatus, idUsuario){
+
+            var id = "#filasTabla" + idUsuario;
+            if ($(thisElement).is(':checked')){
+
+            estatus = 1;
+            $.ajax({
+            url: "/Usuario/softDelete/" + idUsuario + "/" + estatus, //url de la peticion
+                    method: "GET", //tipo de accion
+                    dataType: 'json', // tipos de datos
+                    //Cuando la peticion fue exitosa:
+                    success: function (data, textStatus, jqXHR) {
+                    if (data.Correct) {
+                    window.location.href = "/Usuario";
+                    }
+                    },
+                    //Cuando hubo error en la petición 
+                    error: function (jqXHR, textStatus, errorThrown) {
+                    alert(textStatus);
+                    }
+
+            });
+            } else{
+
+            estatus = 0;
+            var idAcciones = "td" + idUsuario;
+//            $(idAcciones).siblings().css({"display":"none"});
+
+            $.ajax({
+            url: "/Usuario/softDelete/" + idUsuario + "/" + estatus, //url de la peticion
+                    method: "GET", //tipo de accion
+                    dataType: 'json', // tipos de datos
+                    //data
+                    //Cuando la peticion fue exitosa:
+                    success: function (data, textStatus, jqXHR) {
+                    if (data.Correct) {
+                    console.log("Usuario desactivado");
+                    window.location.href = "/Usuario";
+//                    $(this).css("opacity", "1");
+//                    var id = "#filasTabla"+idUsuario;
+//                     $(id).addClass("text-decoration-line-through");
+
+                    }
+                    },
+                    //Cuando hubo error en la petición 
+                    error: function (jqXHR, textStatus, errorThrown) {
+                    alert(textStatus);
+                    }
+
+            });
+            }
+
+            }
+
+
+
+        </script>
+
+        <script th:inline="javascript" >
+//            
+            $.each([[${usuariosEstatus}]], function(i, usuario){ //iterando sobre el model enviado
+            var filasT = "#filasTabla" + usuario.idUsuario; //obteniendo id de la fila especifica
+            var switchBtn = "#switch" + usuario.idUsuario;
+            if (usuario.estatus == 0){ //si el estatus del usuario es 0, se "borra"
+            $(filasT).css("opacity", "0.5");
+            $(filasT).css("text-decoration", "line-through");
+            $(filasT).css("text-decoration-thickness", "1rem");
+            $(filasT).css("text-decoration-color", "gray");
+//        console.log(usuario.idUsuario + ".- estatus: "+usuario.estatus);
+            }
+            });
+            window.addEventListener('pageshow', function(event) {
+            // Si 'persisted' es true, la página se cargó desde el caché (bfcache)
+            // Si es la primera carga o viene de otra fuente, será false.
+            if (event.persisted || (typeof window.performance !== 'undefined' && window.performance.navigation.type === 2)) {
+            // Esto es para cuando el usuario usa la flecha atrás
+            location.reload();
+            }
+            });
+
+        </script>
+
+    </body>
+</html>

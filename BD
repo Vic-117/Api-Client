@@ -1,0 +1,780 @@
+--------------------------------------------------------
+--  File created - martes-diciembre-09-2025   
+--------------------------------------------------------
+DROP TABLE COLONIA;
+DROP TABLE DIRECCION;
+DROP TABLE ESTADO;
+DROP TABLE MUNICIPIO;
+DROP TABLE PAIS;
+DROP TABLE ROL;
+DROP TABLE TABLAINFO;
+DROP TABLE USUARIO;
+DROP VIEW VIEWGETUSUARIO;
+DROP PROCEDURE ADDUSUARIO;
+DROP PROCEDURE ALUMNODIRECCIONADD;
+DROP PROCEDURE BUSQUEDAUSUARIOS;
+DROP PROCEDURE DELETEUSUARIO;
+DROP PROCEDURE GETALLUSUARIO;
+DROP PROCEDURE GETCODIGOPOSTALBYCOLONIA;
+DROP PROCEDURE GETCOLONIABYMUNICIPIO;
+DROP PROCEDURE GETDIRECCIONBYID;
+DROP PROCEDURE GETDIRECCIONBYUSUARIO;
+DROP PROCEDURE GETESTADO;
+DROP PROCEDURE GETESTADOBYPAIS;
+DROP PROCEDURE GETMUNICIPIO;
+DROP PROCEDURE GETMUNICIPIOBYESTADO;
+DROP PROCEDURE GETPAIS;
+DROP PROCEDURE GETROLES;
+DROP PROCEDURE GETUSUARIODIRECCION;
+DROP PROCEDURE UPDATEDIRECCION;
+DROP PROCEDURE UPDATEUSUARIO;
+DROP PROCEDURE USUARIODIRECCIONDELETE;
+DROP PROCEDURE USUARIODIRECCIONGETALL;
+DROP PROCEDURE USUARIODURECCIONGETBYID;
+DROP PROCEDURE USUARIOGETBYID;
+--------------------------------------------------------
+--  DDL for Table COLONIA
+--------------------------------------------------------
+
+  CREATE TABLE COLONIA 
+   (	IDCOLONIA NUMBER(*,0) GENERATED ALWAYS AS IDENTITY, 
+	NOMBRE VARCHAR2(128), 
+	CODIGOPOSTAL VARCHAR2(50), 
+	IDMUNICIPIO NUMBER(*,0)
+   );
+--------------------------------------------------------
+--  DDL for Table DIRECCION
+--------------------------------------------------------
+
+  CREATE TABLE DIRECCION 
+   (	IDDIRECCION NUMBER(*,0) GENERATED ALWAYS AS IDENTITY, 
+	CALLE VARCHAR2(50), 
+	NUMEROINTERIOR VARCHAR2(20), 
+	NUMEROEXTERIOR VARCHAR2(20), 
+	IDCOLONIA NUMBER(*,0), 
+	IDUSUARIO NUMBER(*,0)
+   );
+--------------------------------------------------------
+--  DDL for Table ESTADO
+--------------------------------------------------------
+
+  CREATE TABLE ESTADO 
+   (	IDESTADO NUMBER(*,0) GENERATED ALWAYS AS IDENTITY, 
+	NOMBRE VARCHAR2(50), 
+	IDPAIS NUMBER(*,0)
+   );
+--------------------------------------------------------
+--  DDL for Table MUNICIPIO
+--------------------------------------------------------
+
+  CREATE TABLE MUNICIPIO 
+   (	IDMUNICIPIO NUMBER(*,0) GENERATED ALWAYS AS IDENTITY, 
+	NOMBRE VARCHAR2(50), 
+	IDESTADO NUMBER(*,0)
+   ) ;
+--------------------------------------------------------
+--  DDL for Table PAIS
+--------------------------------------------------------
+
+  CREATE TABLE PAIS 
+   (	IDPAIS NUMBER(*,0) GENERATED ALWAYS AS IDENTITY, 
+	NOMBRE VARCHAR2(50)
+   ) ;
+--------------------------------------------------------
+--  DDL for Table ROL
+--------------------------------------------------------
+
+  CREATE TABLE ROL 
+   (	IDROL NUMBER GENERATED ALWAYS AS IDENTITY, 
+	NOMBRE VARCHAR2(50)
+   ) ;
+--------------------------------------------------------
+--  DDL for Table TABLAINFO
+--------------------------------------------------------
+
+  CREATE TABLE TABLAINFO 
+   (	D_CODIGO VARCHAR2(26), 
+	D_ASENTA VARCHAR2(128), 
+	D_MNPIO VARCHAR2(26), 
+	D_ESTADO VARCHAR2(26), 
+	D_CIUDAD VARCHAR2(26), 
+	D_CP VARCHAR2(26)
+   ) ;
+--------------------------------------------------------
+--  DDL for Table USUARIO
+--------------------------------------------------------
+
+  CREATE TABLE USUARIO 
+   (	IDUSUARIO NUMBER GENERATED ALWAYS AS IDENTITY, 
+	USERNAME VARCHAR2(50), 
+	APELLIDOPATERNO VARCHAR2(50), 
+	APELLIDOMATERNO VARCHAR2(50), 
+	EMAIL VARCHAR2(254), 
+	PASSWORD VARCHAR2(50), 
+	FECHANACIMIENTO DATE, 
+	IDROL NUMBER, 
+	SEXO CHAR(2), 
+	TELEFONO VARCHAR2(20), 
+	CELULAR VARCHAR2(20), 
+	CURP VARCHAR2(50)
+   ) ;
+--------------------------------------------------------
+--  DDL for View VIEWGETUSUARIO
+--------------------------------------------------------
+
+  CREATE OR REPLACE FORCE VIEW VIEWGETUSUARIO (IDUSUARIO, NOMBREUSUARIO, NOMBREROL, IDROL, APELLIDOPATERNO, APELLIDOMATERNO, EMAIL, FECHANACIMIENTO, SEXO, TELEFONO, CELULAR, CURP, IDDIRECCION, CALLE, NUMEROINTERIOR, NUMEROEXTERIOR, NOMBRECOLONIA, CODIGOPOSTAL, MUNICIPIONOMBRE, ESTADONOMBRE, PAISNOMBRE) AS 
+  SELECT   
+    USUARIO.IDUSUARIO AS IDUSUARIO,
+    USUARIO.USERNAME AS NOMBREUSUARIO,
+    ROL.NOMBRE AS NOMBREROL,
+    ROL.IDROL,
+    USUARIO.APELLIDOPATERNO,
+    USUARIO.APELLIDOMATERNO,
+    USUARIO.EMAIL,
+    USUARIO.FECHANACIMIENTO,
+    USUARIO.SEXO,
+    USUARIO.TELEFONO,
+    USUARIO.CELULAR,
+    USUARIO.CURP,
+    DIRECCION.IDDIRECCION,
+    DIRECCION.CALLE,
+    DIRECCION.NUMEROINTERIOR,
+    DIRECCION.NUMEROEXTERIOR,
+    COLONIA.NOMBRE AS NOMBRECOLONIA,
+    COLONIA.CODIGOPOSTAL, 
+    MUNICIPIO.NOMBRE AS MUNICIPIONOMBRE,
+    ESTADO.NOMBRE AS ESTADONOMBRE,
+    PAIS.NOMBRE AS PAISNOMBRE
+    FROM USUARIO
+    INNER JOIN ROL ON USUARIO.IDROL = ROL.IDROL
+    LEFT JOIN DIRECCION ON usuario.idusuario = direccion.idusuario
+    LEFT JOIN COLONIA ON direccion.idcolonia = COLONIA.IDCOLONIA
+    LEFT JOIN MUNICIPIO ON colonia.idmunicipio = municipio.idmunicipio
+    LEFT JOIN ESTADO ON MUNICIPIO.IDESTADO = estado.idestado
+    LEFT JOIN PAIS ON ESTADO.IDPAIS = pais.idpais
+    ORDER BY IDUSUARIO
+;
+
+--------------------------------------------------------
+--  DDL for Procedure ADDUSUARIO
+--------------------------------------------------------
+
+
+  CREATE OR REPLACE PROCEDURE ADDUSUARIO (pUsername varchar2,pApellidoP varchar2,pApellidoM varchar2,pEmail varchar,
+pPassword varchar2,pFechaNac DATE,pIdRol INTEGER,pSexo CHAR ,pTelefono VARCHAR2,pCelular VARCHAR,pCurp VARCHAR)
+AS
+BEGIN
+    INSERT INTO USUARIO (USERNAME, APELLIDOPATERNO, APELLIDOMATERNO, EMAIL, PASSWORD, FECHANACIMIENTO,IDROL, SEXO, TELEFONO, CELULAR, CURP)
+    VALUES(pUsername,pApellidoP,pApellidoM ,pEmail ,pPassword ,pFechaNac,pIdRol,pSexo ,pTelefono ,pCelular,pCurp);
+
+END addUsuario;
+
+/
+--------------------------------------------------------
+--  DDL for Procedure ALUMNODIRECCIONADD
+--------------------------------------------------------
+
+
+  CREATE OR REPLACE PROCEDURE ALUMNODIRECCIONADD (
+    PUSERNAME VARCHAR2,PAPELLIDOPATERNO VARCHAR2,PAPELLIDOMATERNO VARCHAR2,PEMAIL VARCHAR2,PPASSWORD VARCHAR2,
+    PFECHANACIMIENTO DATE,PIDROL int,PSEXO CHAR,PTELEFONO VARCHAR2,PCELULAR VARCHAR2,PCURP VARCHAR2,
+    PCALLE VARCHAR2,PNUMEROINTERIOR VARCHAR2,PNUMEROEXTERIOR VARCHAR2,PIDCOLONIA int    
+)
+AS
+    vIdUsuario int;
+BEGIN
+
+    INSERT INTO USUARIO(USERNAME,APELLIDOPATERNO,APELLIDOMATERNO,EMAIL,PASSWORD,FECHANACIMIENTO,IDROL,SEXO,TELEFONO,CELULAR,CURP)
+    VALUES(PUSERNAME,PAPELLIDOPATERNO,PAPELLIDOMATERNO,PEMAIL,PPASSWORD,PFECHANACIMIENTO,PIDROL,PSEXO,PTELEFONO,PCELULAR,PCURP)
+    RETURNING IDUSUARIO INTO vIdUsuario;
+
+    INSERT INTO DIRECCION(CALLE,NUMEROINTERIOR,NUMEROEXTERIOR,IDCOLONIA,IDUSUARIO)
+    VALUES(PCALLE,PNUMEROINTERIOR,PNUMEROEXTERIOR,PIDCOLONIA,vIdUsuario);
+
+END AlumnoDireccionAdd;
+
+/
+--------------------------------------------------------
+--  DDL for Procedure BUSQUEDAUSUARIOS
+--------------------------------------------------------
+
+
+  CREATE OR REPLACE PROCEDURE BUSQUEDAUSUARIOS (
+pNombre VARCHAR2, pApellidoPaterno VARCHAR2,pApellidoMaterno VARCHAR2,pRol NUMBER,pCursor OUT SYS_REFCURSOR
+)
+AS
+ ConsultaDinamica VARCHAR(4000);
+BEGIN
+    consultadinamica := 'SELECT IDUSUARIO,NOMBREUSUARIO, APELLIDOPATERNO, APELLIDOMATERNO,NOMBREROL,IDROL,EMAIL,FECHANACIMIENTO,SEXO,
+    TELEFONO,CELULAR,CURP,IDDIRECCION,CALLE,NUMEROINTERIOR,NUMEROEXTERIOR, NOMBRECOLONIA,CODIGOPOSTAL,MUNICIPIONOMBRE, ESTADONOMBRE,PAISNOMBRE
+    FROM viewGetUsuario ';
+
+    consultadinamica := consultadinamica || 'WHERE LOWER(NOMBREUSUARIO) LIKE LOWER(''%''||:nombreUsuario||''%'') ';
+     consultadinamica := consultadinamica || 'AND LOWER(APELLIDOPATERNO) LIKE LOWER(''%''||:apellidoPaterno||''%'') ';
+    consultadinamica := consultadinamica ||'AND LOWER(APELLIDOMATERNO) LIKE LOWER(''%''||:apellidoMaterno||''%'') ';
+    IF pRol <> 0 THEN    
+    consultadinamica := consultadinamica ||'AND IDROL = :pRol';
+    OPEN pCursor FOR ConsultaDinamica USING pNombre,pApellidoPaterno,pApellidoMaterno,pRol;
+    ELSE
+    OPEN pCursor FOR ConsultaDinamica USING pNombre,pApellidoPaterno,pApellidoMaterno;
+    END IF;
+
+
+
+END  busquedaUsuarios;
+
+/
+--------------------------------------------------------
+--  DDL for Procedure DELETEUSUARIO
+--------------------------------------------------------
+
+
+  CREATE OR REPLACE PROCEDURE DELETEUSUARIO (pId number)
+AS
+BEGIN
+    DELETE FROM Usuario
+    WHERE idusuario = pId;
+
+END deleteUsuario;
+
+/
+--------------------------------------------------------
+--  DDL for Procedure GETALLUSUARIO
+--------------------------------------------------------
+
+
+  CREATE OR REPLACE PROCEDURE GETALLUSUARIO (
+    pCursor OUT SYS_REFCURSOR
+)
+AS
+BEGIN
+    OPEN pCursor FOR
+    SELECT 
+    USUARIO.IDUSUARIO,
+    USUARIO.USERNAME,
+    USUARIO.APELLIDOPATERNO,
+    USUARIO.APELLIDOMATERNO, 
+    USUARIO.EMAIL,
+    USUARIO.PASSWORD,
+    USUARIO.FECHANACIMIENTO, 
+    USUARIO.SEXO,
+    USUARIO.TELEFONO,
+    USUARIO.CELULAR,
+    USUARIO.CURP ,
+    USUARIO.IDROL,
+    ROL.NOMBRE
+    FROM USUARIO
+    LEFT JOIN ROL ON ROL.IDROL = USUARIO.IDROL;
+END getAllusuario;
+
+/
+--------------------------------------------------------
+--  DDL for Procedure GETCODIGOPOSTALBYCOLONIA
+--------------------------------------------------------
+
+
+  CREATE OR REPLACE PROCEDURE GETCODIGOPOSTALBYCOLONIA (
+    pIdColonia IN int,
+    pCursor OUT SYS_REFCURSOR
+)
+AS
+BEGIN 
+    OPEN pCursor FOR 
+    SELECT IDCOLONIA,CODIGOPOSTAL FROM COLONIA
+    WHERE pIdColonia = IDCOLONIA;
+
+END getCodigoPostalByColonia;
+
+/
+--------------------------------------------------------
+--  DDL for Procedure GETCOLONIABYMUNICIPIO
+--------------------------------------------------------
+
+
+  CREATE OR REPLACE PROCEDURE GETCOLONIABYMUNICIPIO (
+    pIdMunicipio IN int,
+    pCursor OUT SYS_REFCURSOR
+)
+AS
+BEGIN
+
+    OPEN pCursor FOR
+    SELECT IDCOLONIA,NOMBRE,CODIGOPOSTAL FROM COLONIA
+    WHERE  pIdMunicipio = IDMUNICIPIO;
+
+END getColoniaByMunicipio;
+
+/
+--------------------------------------------------------
+--  DDL for Procedure GETDIRECCIONBYID
+--------------------------------------------------------
+
+
+  CREATE OR REPLACE PROCEDURE GETDIRECCIONBYID (
+    pIdDireccion int,
+    pCursor OUT SYS_REFCURSOR
+    
+)
+AS
+BEGIN
+
+    OPEN pCursor FOR
+    SELECT Direccion.IDDIRECCION,Direccion.CALLE,Direccion.NUMEROINTERIOR,Direccion.NUMEROEXTERIOR,
+    Usuario.IDUSUARIO,PAIS.IDPAIS,ESTADO.IDESTADO,MUNICIPIO.IDMUNICIPIO,COLONIA.IDCOLONIA
+    FROM DIRECCION
+    INNER JOIN Usuario ON Usuario.IdUsuario = Direccion.IdUsuario
+    INNER JOIN COLONIA ON DIRECCION.IDCOLONIA = COLONIA.IDCOLONIA
+    INNER JOIN MUNICIPIO ON COLONIA.IDMUNICIPIO = MUNICIPIO.IDMUNICIPIO
+    INNER JOIN ESTADO ON MUNICIPIO.IDESTADO = ESTADO.IDESTADO
+    INNER JOIN PAIS ON ESTADO.IDPAIS = PAIS.IDPAIS
+
+    WHERE IDDIRECCION =pIdDireccion;
+
+END getDireccionById;
+
+/
+--------------------------------------------------------
+--  DDL for Procedure GETDIRECCIONBYUSUARIO
+--------------------------------------------------------
+
+
+  CREATE OR REPLACE PROCEDURE GETDIRECCIONBYUSUARIO (
+    pIdUsuario int,
+    pCursor OUT SYS_REFCURSOR
+)
+AS 
+BEGIN
+    OPEN pCursor FOR
+    SELECT USUARIO.IDUSUARIO, DIRECCION.IDDIRECCION FROM USUARIO 
+    INNER JOIN DIRECCION ON USUARIO.IDUSUARIO = DIRECCION.IDUSUARIO
+    WHERE pIdUsuario = DIRECCION.IDUSUARIO;
+END getDireccionByUsuario;
+
+/
+--------------------------------------------------------
+--  DDL for Procedure GETESTADO
+--------------------------------------------------------
+
+
+  CREATE OR REPLACE PROCEDURE GETESTADO (
+    pIdPais IN int,
+    pCursor OUT SYS_REFCURSOR
+)
+AS
+BEGIN
+
+    OPEN pCursor FOR
+    SELECT IDESTADO,NOMBRE FROM ESTADO 
+    WHERE  pIdPais = IDPAIS;
+
+END getEstado;
+
+/
+--------------------------------------------------------
+--  DDL for Procedure GETESTADOBYPAIS
+--------------------------------------------------------
+
+
+  CREATE OR REPLACE PROCEDURE GETESTADOBYPAIS (
+    pIdPais IN int,
+    pCursor OUT SYS_REFCURSOR
+)
+AS
+BEGIN
+
+    OPEN pCursor FOR
+    SELECT IDESTADO,NOMBRE FROM ESTADO 
+    WHERE  pIdPais = IDPAIS;
+
+END getEstadoByPais;
+
+/
+--------------------------------------------------------
+--  DDL for Procedure GETMUNICIPIO
+--------------------------------------------------------
+
+
+  CREATE OR REPLACE PROCEDURE GETMUNICIPIO (
+    pIdEstado IN int,
+    pCursor OUT SYS_REFCURSOR
+)
+AS
+BEGIN
+
+    OPEN pCursor FOR
+    SELECT IDMUNICIPIO,NOMBRE FROM MUNICIPIO
+    WHERE  pIdEstado = IDESTADO;
+
+END getMunicipio;
+
+/
+--------------------------------------------------------
+--  DDL for Procedure GETMUNICIPIOBYESTADO
+--------------------------------------------------------
+
+
+  CREATE OR REPLACE PROCEDURE GETMUNICIPIOBYESTADO (
+    pIdEstado IN int,
+    pCursor OUT SYS_REFCURSOR
+)
+AS
+BEGIN
+
+    OPEN pCursor FOR
+    SELECT IDMUNICIPIO,NOMBRE FROM MUNICIPIO
+    WHERE  pIdEstado = IDESTADO;
+
+END getMunicipioByEstado;
+
+/
+--------------------------------------------------------
+--  DDL for Procedure GETPAIS
+--------------------------------------------------------
+
+
+  CREATE OR REPLACE PROCEDURE GETPAIS (
+    pCursor OUT SYS_REFCURSOR
+)
+AS
+BEGIN
+    OPEN pCursor FOR
+    SELECT IDPAIS, NOMBRE
+    FROM PAIS;
+END;
+
+/
+--------------------------------------------------------
+--  DDL for Procedure GETROLES
+--------------------------------------------------------
+
+
+  CREATE OR REPLACE PROCEDURE GETROLES (
+    pCursor OUT SYS_REFCURSOR
+)
+AS
+BEGIN
+    OPEN pCursor FOR
+    SELECT IDROL, NOMBRE FROM ROL;
+
+END;
+
+/
+--------------------------------------------------------
+--  DDL for Procedure GETUSUARIODIRECCION
+--------------------------------------------------------
+
+
+  CREATE OR REPLACE PROCEDURE GETUSUARIODIRECCION (
+ pCursor OUT SYS_REFCURSOR
+)
+AS
+BEGIN
+
+   OPEN pCursor FOR
+   SELECT 
+        DIRECCION.CALLE,
+        DIRECCION.NUMEROINTERIOR,
+        DIRECCION.NUMEROEXTERIOR,    
+        USUARIO.IDUSUARIO,
+        USUARIO.USERNAME,
+        USUARIO.APELLIDOPATERNO,
+        USUARIO.APELLIDOMATERNO
+    FROM DIRECCION
+    RIGHT JOIN USUARIO ON direccion.idusuario = usuario.idusuario;
+
+END getUsuarioDireccion;
+
+/
+--------------------------------------------------------
+--  DDL for Procedure UPDATEDIRECCION
+--------------------------------------------------------
+
+
+  CREATE OR REPLACE PROCEDURE UPDATEDIRECCION (
+    PIDDIRECCION INT,
+    PCALLE VARCHAR2,
+    PNoInterior VARCHAR2,
+    PNoExterior VARCHAR2,
+    PPAIS VARCHAR2,
+    PESTADO VARCHAR2,
+    PMUNICIPIO VARCHAR2,
+    PCOLONIA VARCHAR2
+)
+AS
+vIdColonia int;
+vIdMunicipio int;
+vIdEstado int;
+vIdPais int;
+BEGIN
+    UPDATE DIRECCION
+    SET CALLE = PCALLE,
+    NUMEROINTERIOR = PNoInterior,
+    NUMEROEXTERIOR = PNoExterior 
+    WHERE IDDIRECCION = PIDDIRECCION
+    RETURNING DIRECCION.IDCOLONIA INTO vIdColonia;
+
+    UPDATE COLONIA
+    SET COLONIA.NOMBRE = PCOLONIA
+    WHERE COLONIA.IDCOLONIA = vIdColonia
+    RETURNING COLONIA.IDMUNICIPIO INTO vIdMunicipio;
+
+    UPDATE MUNICIPIO
+    SET MUNICIPIO.NOMBRE = PMUNICIPIO
+    WHERE MUNICIPIO.IDMUNICIPIO = vIdMunicipio
+    RETURNING MUNICIPIO.IDESTADO INTO vIdEstado;
+
+    UPDATE ESTADO
+    SET ESTADO.NOMBRE = PESTADO
+    WHERE ESTADO.IDESTADO = vIdEstado
+    RETURNING ESTADO.IDPAIS INTO vIdPais;
+
+    UPDATE PAIS
+    SET PAIS.NOMBRE = PPAIS
+    WHERE PAIS.idpais = vIdPais;
+
+END;
+
+/
+--------------------------------------------------------
+--  DDL for Procedure UPDATEUSUARIO
+--------------------------------------------------------
+
+
+  CREATE OR REPLACE PROCEDURE UPDATEUSUARIO (
+    pIdusuario int,
+    pUsername VARCHAR2,
+    pApellidoP VARCHAR2,
+    pApellidoM VARCHAR2,
+    pEmail VARCHAR2,
+    pPassword VARCHAR2,
+    pFechaNac DATE,
+    pIdrol int,
+    pSexo VARCHAR2,
+    ptelefono VARCHAR2,
+    pCelular VARCHAR2,
+    pCurp VARCHAR2
+)
+AS
+BEGIN
+    UPDATE USUARIO
+    SET USERNAME = pUsername,
+     APELLIDOPATERNO = pApellidoP ,
+    APELLIDOMATERNO = pApellidoM,
+    EMAIL = pEmail ,
+    PASSWORD = pPassword ,
+    FECHANACIMIENTO = pFechaNac ,
+    IDROL = pIdrol ,
+    SEXO = pSexo ,
+    TELEFONO = ptelefono ,
+    CELULAR = pCelular ,
+    CURP = pCurp 
+    WHERE IDUSUARIO = pIdusuario;
+END updateUsuario;
+
+/
+--------------------------------------------------------
+--  DDL for Procedure USUARIODIRECCIONDELETE
+--------------------------------------------------------
+
+
+  CREATE OR REPLACE PROCEDURE USUARIODIRECCIONDELETE (
+    PIDUSUARIO int
+)
+AS
+vIdUsuario int;
+BEGIN
+
+    DELETE FROM DIRECCION
+    WHERE PIDUSUARIO = direccion.idusuario
+    RETURNING DIRECCION.IDUSUARIO INTO vIdUsuario;
+
+
+    DELETE FROM USUARIO 
+    WHERE USUARIO.idusuario = vIdUsuario;
+
+
+
+
+END UsuarioDireccionDelete;
+
+/
+--------------------------------------------------------
+--  DDL for Procedure USUARIODIRECCIONGETALL
+--------------------------------------------------------
+
+
+  CREATE OR REPLACE PROCEDURE USUARIODIRECCIONGETALL (
+    pCursor OUT SYS_REFCURSOR
+)
+AS
+BEGIN
+    OPEN pCursor FOR
+    SELECT 
+    USUARIO.IDUSUARIO,
+    USUARIO.USERNAME AS NOMBREUSUARIO,
+    USUARIO.IDROL,
+    USUARIO.APELLIDOPATERNO,
+    USUARIO.APELLIDOMATERNO,
+    USUARIO.EMAIL,
+    USUARIO.FECHANACIMIENTO,
+    USUARIO.SEXO,
+    USUARIO.TELEFONO,
+    USUARIO.CELULAR,
+    USUARIO.CURP,
+    DIRECCION.IDDIRECCION,
+    DIRECCION.CALLE,
+    DIRECCION.NUMEROINTERIOR,
+    DIRECCION.NUMEROEXTERIOR,
+    COLONIA.NOMBRE AS NOMBRECOLONIA,
+    COLONIA.CODIGOPOSTAL, 
+    MUNICIPIO.NOMBRE AS MUNICIPIONOMBRE,
+    ESTADO.NOMBRE AS ESTADONOMBRE,
+    PAIS.NOMBRE AS PAISNOMBRE
+    FROM USUARIO
+    INNER JOIN ROL ON USUARIO.IDROL = ROL.IDROL
+    LEFT JOIN DIRECCION ON usuario.idusuario = direccion.idusuario
+    LEFT JOIN COLONIA ON direccion.idcolonia = COLONIA.IDCOLONIA
+    LEFT JOIN MUNICIPIO ON colonia.idmunicipio = municipio.idmunicipio
+    LEFT JOIN ESTADO ON MUNICIPIO.IDESTADO = estado.idestado
+    LEFT JOIN PAIS ON ESTADO.IDPAIS = pais.idpais
+    ORDER BY IDUSUARIO DESC;
+
+END UsuarioDireccionGetAll;
+
+/
+--------------------------------------------------------
+--  DDL for Procedure USUARIODURECCIONGETBYID
+--------------------------------------------------------
+
+
+  CREATE OR REPLACE PROCEDURE USUARIODURECCIONGETBYID (
+    pIdUsuario int,
+    pCursor OUT SYS_REFCURSOR
+)
+AS
+BEGIN
+    OPEN pCursor FOR
+    SELECT Usuario.IdUsuario,USERNAME,APELLIDOPATERNO,APELLIDOMATERNO,EMAIL,PASSWORD,FECHANACIMIENTO,IDROL,SEXO,TELEFONO,CELULAR,CURP,DIRECCION.IDDIRECCION,
+    DIRECCION.CALLE,DIRECCION.NUMEROINTERIOR,DIRECCION.NUMEROEXTERIOR,DIRECCION.IDCOLONIA
+    FROM USUARIO
+    LEFT JOIN DIRECCION ON USUARIO.IDUSUARIO = direccion.idusuario
+    WHERE DIRECCION.IDUSUARIO = pIdUsuario;
+
+END;
+
+/
+--------------------------------------------------------
+--  DDL for Procedure USUARIOGETBYID
+--------------------------------------------------------
+
+
+  CREATE OR REPLACE PROCEDURE USUARIOGETBYID (
+    PIDUSUARIO INT,
+    pCursor OUT SYS_REFCURSOR
+ 
+)
+AS
+BEGIN
+
+    Open pCursor FOR
+    SELECT IDUSUARIO,USERNAME,APELLIDOPATERNO,APELLIDOMATERNO,EMAIL,PASSWORD,FECHANACIMIENTO,ROL.IDROL,ROL.NOMBRE AS NOMBREROL,SEXO,TELEFONO,CELULAR,CURP
+    FROM USUARIO
+    LEFT JOIN ROL ON USUARIO.IDROL = ROL.IDROL
+    WHERE IDUSUARIO = PIDUSUARIO;
+
+END UsuarioGetById;
+
+/
+--------------------------------------------------------
+--  Constraints for Table DIRECCION
+--------------------------------------------------------
+
+  ALTER TABLE DIRECCION MODIFY (IDDIRECCION NOT NULL);
+  ALTER TABLE DIRECCION MODIFY (CALLE NOT NULL);
+  ALTER TABLE DIRECCION MODIFY (NUMEROEXTERIOR NOT NULL);
+  ALTER TABLE DIRECCION MODIFY (IDCOLONIA NOT NULL);
+  ALTER TABLE DIRECCION MODIFY (IDUSUARIO NOT NULL);
+  ALTER TABLE DIRECCION ADD PRIMARY KEY (IDDIRECCION);
+--------------------------------------------------------
+--  Constraints for Table ESTADO
+--------------------------------------------------------
+
+  ALTER TABLE ESTADO MODIFY (IDESTADO NOT NULL);
+  ALTER TABLE ESTADO MODIFY (NOMBRE NOT NULL);
+  ALTER TABLE ESTADO ADD PRIMARY KEY (IDESTADO);
+--------------------------------------------------------
+--  Constraints for Table ROL
+--------------------------------------------------------
+
+  ALTER TABLE ROL MODIFY (IDROL NOT NULL);
+  ALTER TABLE ROL ADD PRIMARY KEY (IDROL);
+--------------------------------------------------------
+--  Constraints for Table USUARIO
+--------------------------------------------------------
+
+  ALTER TABLE USUARIO MODIFY (IDUSUARIO NOT NULL);
+  ALTER TABLE USUARIO ADD PRIMARY KEY (IDUSUARIO);
+  ALTER TABLE USUARIO MODIFY (SEXO NOT NULL);
+  ALTER TABLE USUARIO MODIFY (USERNAME NOT NULL);
+  ALTER TABLE USUARIO MODIFY (APELLIDOPATERNO NOT NULL);
+  ALTER TABLE USUARIO MODIFY (PASSWORD NOT NULL);
+  ALTER TABLE USUARIO MODIFY (EMAIL NOT NULL);
+  ALTER TABLE USUARIO MODIFY (TELEFONO NOT NULL);
+  ALTER TABLE USUARIO MODIFY (FECHANACIMIENTO NOT NULL);
+  ALTER TABLE USUARIO ADD CONSTRAINT UNI_USERNAME UNIQUE (USERNAME);
+--------------------------------------------------------
+--  Constraints for Table PAIS
+--------------------------------------------------------
+
+  ALTER TABLE PAIS MODIFY (IDPAIS NOT NULL);
+  ALTER TABLE PAIS MODIFY (NOMBRE NOT NULL);
+  ALTER TABLE PAIS ADD PRIMARY KEY (IDPAIS);
+--------------------------------------------------------
+--  Constraints for Table MUNICIPIO
+--------------------------------------------------------
+
+  ALTER TABLE MUNICIPIO MODIFY (IDMUNICIPIO NOT NULL);
+  ALTER TABLE MUNICIPIO MODIFY (NOMBRE NOT NULL);
+  ALTER TABLE MUNICIPIO MODIFY (IDESTADO NOT NULL);
+  ALTER TABLE MUNICIPIO ADD PRIMARY KEY (IDMUNICIPIO);
+--------------------------------------------------------
+--  Constraints for Table COLONIA
+--------------------------------------------------------
+
+  ALTER TABLE COLONIA MODIFY (IDCOLONIA NOT NULL);
+  ALTER TABLE COLONIA MODIFY (NOMBRE NOT NULL);
+  ALTER TABLE COLONIA MODIFY (CODIGOPOSTAL NOT NULL);
+  ALTER TABLE COLONIA MODIFY (IDMUNICIPIO NOT NULL);
+  ALTER TABLE COLONIA ADD PRIMARY KEY (IDCOLONIA);
+--------------------------------------------------------
+--  Ref Constraints for Table COLONIA
+--------------------------------------------------------
+
+  ALTER TABLE COLONIA ADD CONSTRAINT FK_IDMUNICIPIO FOREIGN KEY (IDMUNICIPIO)
+	  REFERENCES MUNICIPIO (IDMUNICIPIO);
+--------------------------------------------------------
+--  Ref Constraints for Table DIRECCION
+--------------------------------------------------------
+
+  ALTER TABLE DIRECCION ADD CONSTRAINT FK_IDUSUARIO FOREIGN KEY (IDUSUARIO)
+	  REFERENCES USUARIO (IDUSUARIO);
+  ALTER TABLE DIRECCION ADD CONSTRAINT FK_IDCOLONIA FOREIGN KEY (IDCOLONIA)
+	  REFERENCES COLONIA (IDCOLONIA);
+--------------------------------------------------------
+--  Ref Constraints for Table ESTADO
+--------------------------------------------------------
+
+  ALTER TABLE ESTADO ADD CONSTRAINT FK_IDPAIS FOREIGN KEY (IDPAIS)
+	  REFERENCES PAIS (IDPAIS);
+--------------------------------------------------------
+--  Ref Constraints for Table MUNICIPIO
+--------------------------------------------------------
+
+  ALTER TABLE MUNICIPIO ADD CONSTRAINT FK_IDESTADO FOREIGN KEY (IDESTADO)
+	  REFERENCES ESTADO (IDESTADO);
+--------------------------------------------------------
+--  Ref Constraints for Table USUARIO
+--------------------------------------------------------
+
+  ALTER TABLE USUARIO ADD CONSTRAINT IDROL FOREIGN KEY (IDROL)
+	  REFERENCES ROL (IDROL);

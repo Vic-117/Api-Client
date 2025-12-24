@@ -1,0 +1,160 @@
+
+<!DOCTYPE html>
+
+
+
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+        <style>
+            #formCargaMasiva{
+                /*border: 1px solid #000;*/
+                padding: 2rem;
+                display: none;
+            }
+            #btn-excel{
+                border: 2px solid #CBD2D9;
+            }
+
+            #btn-txt{
+                border: 2px solid #CBD2D9;
+
+            }
+
+            #input-file{
+                border: 2px solid #CBD2D9;
+            }
+
+            .btn-submit-excel{
+                background-color: #297D27;
+                color: white;
+
+                &:hover{
+                    background-color: #226920;
+                }
+            }
+
+            .btn-submit-txt{
+                background-color: #CBD2D9;
+                color: black
+            }
+
+            .btn-submit-txt:hover{
+                background-color: #969A9E;
+            }
+        </style>
+
+    </head>
+    
+    <body class="container p-3">
+        <br>
+        <h1 class="container text-center">Carga Masiva </h1>
+        <label class="container fs-5 mb-4">Sube un documento para guardar multiples usuarios</label>
+
+
+
+        <!--BOTON PARA MOSTRAR FORMULARIO-->
+        <div class="container mb-3 text-center">
+            <button class="container btn btn-primary col-3" id="btn-show-form" onclick="mostrarForm()">Mostrar formulario</button>
+        </div>
+
+        <section  id="formCargaMasiva"class="card">
+
+
+            <!--BOTONES DE EXCEL Y TXT-->
+            <div class="input-group mb-3 ">
+                <button class=" btn btn-success col-3" id="btn-excel" onclick="cambiarBotonExcel()">EXCELL</button>
+                <button class=" btn btn-light col-3" id="btn-txt" onclick="cambiarBotonTxt()">TXT</button>
+            </div>
+
+
+
+            <form   action="/Usuario/CargaMasiva" method="POST" enctype="multipart/form-data" >
+
+
+                <div id="btns-archivo-submit" class="row" style="display: none">
+
+                    <!--BOTON PARA SUBIR ARCHIVO-->
+                    <div class="mb-3 w-50 input-group">      
+                        <input type="file" class="form-control" id="input-file" name="archivo" required> 
+                        <button type="submit" class="btn" id="btn-submit">Subir</button>
+                    </div>
+
+
+                    <!--BOTON PARA ENVIAR EL FORMULARIO-->
+<!--                    <div class="container mb-3">      
+                       
+
+                    </div>-->
+                </div>
+            </form>
+
+        </section>
+
+        <!--SECCION QUE CONTIENE LA TABLA DE ERRORES-->
+        <div th:if="${Errores != null}">
+
+            <div th:if="${Errores != null and Errores.size() !=0}" class="container">
+                <h4 >Archivo incorrecto: </h4>
+                <table class="table table-responsive table-bordered">
+                    <thead class="table-dark">
+                    <th class="col-2">Linea</th>
+                    <th>Texto</th>
+                    <th>Error</th>
+                    </thead>
+                    <tbody>
+                        <tr th:each="error :${Errores}">
+                            <td th:text="${error.linea}"></td> 
+                            <td th:text="${error.campo}"></td> 
+                            <td th:text="${error.descripcion}"></td> 
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+
+            <div th:if="${Errores == null or Errores.size() == 0}">
+                <h4>Archivo correcto: </h4>
+                <a th:href="@{/Usuario/CargaMasiva/Procesar}" class="btn btn-success">Procesar archivo</a>
+            </div>
+        </div>
+
+
+        <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+
+        <script>
+                    function mostrarForm() {
+                        setTimeout(() => {
+                            $("#formCargaMasiva").css("display", "block");
+                        }, 500);
+                    }
+
+                    function cambiarBotonTxt() {
+                        $("#btn-submit").removeClass("btn-submit-excel");
+                        $("#btn-submit").addClass("btn-submit-txt");
+                        $("#input-file").removeAttr("accept", ".xlsx");
+                        $("#input-file").attr("accept", ".txt");
+                        $("#btns-archivo-submit").css({"display":"block"});
+                    }
+                    function cambiarBotonExcel() {
+                        $("#btn-submit").removeClass("btn-submit-txt");
+                        $("#btn-submit").addClass("btn-submit-excel");
+                        $("#btns-archivo-submit").css({"display":"block"});
+
+                        $("#input-file").removeAttr("accept", ".txt");
+                        $("#input-file").attr("accept", ".xlsx");
+                    }
+
+
+
+
+
+
+        </script>
+    </body>
+</html>
