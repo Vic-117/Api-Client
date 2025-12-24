@@ -241,7 +241,7 @@
 
                 <div class="row mb-3">
                     <label class="input-group-text fw-bold" >Estado:</label>
-                    <select  class="form-control" id="ddlEstado">
+                    <select  class="form-control" id="ddlEstado" >
                         <option value=0>Selecciona un Estado</option>
 
                     </select>
@@ -468,7 +468,7 @@
 
                         //ajax para manejra peticiones asincronas
                         $.ajax({
-                            url: "/Usuario/getEstadoByPais/" + $("#ddlPais").val(), //url de la peticion
+                            url: "http://localhost:8081/api/estado/pais/" + $("#ddlPais").val(), //url de la peticion
                             method: "GET", //tipo de accion
                             dataType: 'json', // tipos de datos
                             //Cuando la peticion fue exitosa:
@@ -510,7 +510,7 @@
                         $("#ddlMunicipio").append(" <option value=0>Selecciona un Municipio</option>");
                         } else {
                         $.ajax({
-                        url: "/Usuario/getMunicipioByEstado/" + $("#ddlEstado").val(),
+                        url: "http://localhost:8081/api/municipio/estado/" + $("#ddlEstado").val(),
                                 method: "GET", //tipo de accion
                                 dataType: 'json', // tipos de datos
                                 success: function (data, textStatus, jqXHR) {
@@ -541,14 +541,14 @@
                         } else {
                         //                                
                         $.ajax({
-                        url: "/Usuario/getColoniaByMunicipio/" + $("#ddlMunicipio").val(),
+                        url: "http://localhost:8081/api/colonia/municipio/" + $("#ddlMunicipio").val(),
                                 method: "GET",
                                 dataType: 'json',
                                 success: function (data, textStatus, jqXHR) {
                                 if (data.Correct) {
                                 $("#ddlColonia").empty();
                                 $("#ddlColonia").append(" <option value=0>Selecciona la Colonia</option>");
-                                $.each(data.Objects, function (i, colonia) {
+                                $.each(data.Object, function (i, colonia) {
                                 $("#ddlColonia").append("<option value=" + colonia.idColonia + ">" + colonia.nombre + "</option>");
                                 });
                                 //                                             
