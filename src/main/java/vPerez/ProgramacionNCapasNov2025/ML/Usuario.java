@@ -7,6 +7,7 @@ package vPerez.ProgramacionNCapasNov2025.ML;
 
 import java.util.Date;
 import java.util.List;
+import org.springframework.format.annotation.DateTimeFormat;
 
 
 /**
@@ -27,6 +28,7 @@ public class Usuario {
     
     private String password;
     
+     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date fechaNacimiento;
 
     public Rol rol;

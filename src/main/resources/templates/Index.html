@@ -28,34 +28,6 @@
 
             <!--BARRA DE BUSQUEDA-->
 
-            <!--            <section class="navbar bg-body-tertiary row">
-                            <form class="col-6" method="post" th:object="${UsuarioBusqueda}" th:action="@{Usuario/Search}">
-                                <div class="input-group ">
-                                    <label class="input-group-text col-1">BUSCAR</label> 
-                                    <input type="text" class="form-control " placeholder="Nombre"  th:field="*{Nombre}"/>
-                                    <input type="text" class="form-control " placeholder="Apellido Paterno"  th:field="*{ApellidoPaterno}"/>
-                                    <input type="text" class="form-control " placeholder="Apellido Materno" th:field="*{ApellidoMaterno}" />
-                                    <input type="text" class="form-control" placeholder="Rol" th:field="*{rol.nombre}"/>
-            
-                                    <select class="form-control"  th:field="*{rol.idRol}">
-                                        <option value="0">Selecciona un rol</option>
-                                        <option th:each="rol:${Roles}"  th:text="${rol.nombre}" th:value="${rol.idRol}"></option>
-                                    </select>    
-            
-            
-                                    <button type="submit" class="btn btn-warning"><i class="bi bi-search"></i></button>
-                                </div>
-            
-                            </form>
-            
-                            <div class="input-group col-6">
-            
-                                <a th:href='@{/Usuario/CargaMasiva}' class="btn btn-outline-success ">Carga masiva</a>
-                                <br>
-                                <a th:href='@{/Usuario/UsuarioDireccionForm}' class="btn btn-outline-success">Agregar usuario</a>
-                            </div>
-                        </section>-->
-
             <section class="navbar bg-body-tertiary" >
                 <div class="container-fluid">
                     <div class="row w-100 align-items-center g-3"> 
@@ -213,8 +185,8 @@
 
             estatus = 1;
             $.ajax({
-            url: "/Usuario/softDelete/" + idUsuario + "/" + estatus, //url de la peticion
-                    method: "GET", //tipo de accion
+            url: "http://localhost:8081/api/usuarios/" + idUsuario + "/" + estatus, //url de la peticion
+                    method: "PATCH", //tipo de accion
                     dataType: 'json', // tipos de datos
                     //Cuando la peticion fue exitosa:
                     success: function (data, textStatus, jqXHR) {
@@ -235,8 +207,8 @@
 //            $(idAcciones).siblings().css({"display":"none"});
 
             $.ajax({
-            url: "/Usuario/softDelete/" + idUsuario + "/" + estatus, //url de la peticion
-                    method: "GET", //tipo de accion
+            url: "http://localhost:8081/api/usuarios/" + idUsuario + "/" + estatus, //url de la peticion
+                    method: "PATCH", //tipo de accion
                     dataType: 'json', // tipos de datos
                     //data
                     //Cuando la peticion fue exitosa:
@@ -252,7 +224,8 @@
                     },
                     //Cuando hubo error en la petición 
                     error: function (jqXHR, textStatus, errorThrown) {
-                    alert(textStatus);
+                    alert(errorThrown);
+                    
                     }
 
             });
@@ -266,7 +239,7 @@
 
         <script th:inline="javascript" >
 //            
-            $.each([[${usuariosEstatus}]], function(i, usuario){ //iterando sobre el model enviado
+            $.each([[${Usuarios}]], function(i, usuario){ //iterando sobre el model enviado
             var filasT = "#filasTabla" + usuario.idUsuario; //obteniendo id de la fila especifica
             var switchBtn = "#switch" + usuario.idUsuario;
             if (usuario.estatus == 0){ //si el estatus del usuario es 0, se "borra"

@@ -61,8 +61,13 @@ public class UsuarioController {
                     new ParameterizedTypeReference<Result<List<Usuario>>>() {
             });
             Result resultUsuario = responseEntity.getBody();
+            
+            ResponseEntity<Result<List<Rol>>> response = restTemplate.exchange(url+"/rol", HttpMethod.GET, HttpEntity.EMPTY, new ParameterizedTypeReference<Result<List<Rol>>>(){});
+            Result resultRol = response.getBody();
             model.addAttribute("Usuarios", resultUsuario.Object);
             model.addAttribute("UsuarioBusqueda", new Usuario());
+            model.addAttribute("Roles",resultRol.Object);
+            
         } catch (Exception ex) {
             System.out.println(ex.getCause());
         }
@@ -173,7 +178,7 @@ public class UsuarioController {
         RestTemplate restTemplate = new RestTemplate();
 
 //           ResponseEntity
-        ResponseEntity<Result>response = restTemplate.exchange(url + "/usuarios/" + idUsuario, HttpMethod.DELETE, HttpEntity.EMPTY, new ParameterizedTypeReference<Result>() {
+        ResponseEntity<Result<List<Usuario>>> response = restTemplate.exchange(url + "/usuarios/" + idUsuario, HttpMethod.DELETE, HttpEntity.EMPTY, new ParameterizedTypeReference<Result<List<Usuario>>>() {
         });
         Result resultDelete = response.getBody();
 
@@ -186,75 +191,91 @@ public class UsuarioController {
         return "redirect:/Usuario";
 
     }
-//
+
 //    @GetMapping("softDelete/{idUsuario}/{estatus}")
 //    @ResponseBody
 //    public Result softDelete(@PathVariable("idUsuario") int idUsuario, @PathVariable("estatus") int estatus, RedirectAttributes redirectAttributes) {
 //        Usuario usuario = new Usuario();
 //        usuario.setIdUsuario(idUsuario);
 //        usuario.setEstatus(estatus);
-//
-//        ModelMapper modelMapper = new ModelMapper();
-//
-//        vPerez.ProgramacionNCapasNov2025.JPA.Usuario usuarioJpa = modelMapper.map(usuario, vPerez.ProgramacionNCapasNov2025.JPA.Usuario.class);
-//        Result resultSoftDel = usuarioJpaDAOImplementation.softDelete(usuarioJpa);
-////        if(resultSoftDel.Correct){
-////            redirectAttributes.addFlashAttribute("")
-////        }
-//        return resultSoftDel;
-//    }
-//
-//    @GetMapping("direccion/delete/{idDireccion}/{idUsuario}")
-//    public String deleteDireccion(@PathVariable("idDireccion") int idDireccion, @PathVariable("idUsuario") String idUsuario, RedirectAttributes redirectAttributes) {
-//        Result resultDelete = direccionJpaDAOImplementation.delete(idDireccion);
-//        if (resultDelete.Correct) {
-//            redirectAttributes.addFlashAttribute("resultadoOperacion", resultDelete.Object);
-//        }
-//
-//        return "redirect:/Usuario/detail/" + idUsuario;//Lleva al endpoint
-////        return "Index; --- LLeva a una plantilla
-//    }
-//
-//    @GetMapping("detail/{idUsuario}")
-//    public String getUsuario(@PathVariable("idUsuario") int idUsuario, Model model, RedirectAttributes redirectAttributes) {
-////        Result result = usuarioDaoImplementation.GetDireccionUsuarioById(idUsuario);
-////        Result resultRol = rolDaoImplementation.getAll();
-////        Result resultPais = paisDaoImplementation.getAll();
-//        Result result = usuarioJpaDAOImplementation.getDireccionUsuarioById(idUsuario);
-//        Result resultRol = rolJpaDAOImplementation.getAll();
-//        Result resultPais = paisJpaDAOImplementation.getAll();
-//        model.addAttribute("Paises", resultPais.Objects);
-////        Result resultUsuario = usuarioDaoImplementation.GetById(idUsuario);
-//        model.addAttribute("Roles", resultRol.Objects);//Agregado 12/12/2025
-//        model.addAttribute("Usuario", result.Object);
-//
-////            Result resultUpdate = usuarioDaoImplementation.UpdateUsuario(usuario);
-////        Result resultUpdate = new Result();
-////        resultUpdate.Correct = true;
-////        if (resultUpdate.Correct) {
-////            resultUpdate.Object = "Usuario actualizado" + idUsuario;
-////        } else {
-////            resultUpdate.Object = "Usuario  NO  actualizado" + idUsuario;
-////        }
-////        redirectAttributes.addFlashAttribute("resultUpdateUsuario", resultUpdate);
-////        redirectAttributes.addFlashAttribute("usuario", resultUsuario);
-//        return "detalleUsuario";
-//    }
-//
-//    @GetMapping("direccionForm/{idUsuario}")
-//    @ResponseBody
-//    public Result getDireccion(@PathVariable("idUsuario") int idUsuario, Model model, RedirectAttributes redirectAttributes) {
-////        Result result = usuarioDaoImplementation.GetDireccionUsuarioById(idUsuario);
-//        Result result = usuarioJpaDAOImplementation.getDireccionUsuarioById(idUsuario);
-//
-//        Result resultRol = rolDaoImplementation.getAll();
-//
-////        redirectAttributes.addFlashAttribute("Roles", resultRol.Objects);//Agregado 12/12/2025
-//        model.addAttribute("UsuarioD", result.Objects);
+//        
+//        RestTemplate restTemplate = new RestTemplate();
+//        
+//        ResponseEntity<Result<Usuario>> responseEntity = restTemplate.exchange(url+"usuarios", HttpMethod.PATCH, HttpEntity.EMPTY, new ParameterizedTypeReference<Result<Usuario>>() {
+//        });
+//        Result result = responseEntity.getBody();
+//       
 //
 //        return result;
 //    }
 //
+    @GetMapping("direccion/delete/{idDireccion}/{idUsuario}")
+    public String deleteDireccion(@PathVariable("idDireccion") int idDireccion, @PathVariable("idUsuario") String idUsuario, RedirectAttributes redirectAttributes) {
+       RestTemplate restTemplate = new RestTemplate();
+       
+       ResponseEntity<Result<List<Direccion>>> response = restTemplate.exchange(url+"/direccion/"+idDireccion, HttpMethod.DELETE, HttpEntity.EMPTY, new ParameterizedTypeReference<Result<List<Direccion>>>() {
+       });
+       
+       Result result = response.getBody();
+       redirectAttributes.addFlashAttribute("DireccionBorrada",result.Correct);
+        return "redirect:/Usuario/detail/" + idUsuario;//Lleva al endpoint
+//        return "Index; --- LLeva a una plantilla
+    }
+
+    @GetMapping("detail/{idUsuario}")
+    public String getUsuario(@PathVariable("idUsuario") int idUsuario, Model model, RedirectAttributes redirectAttributes) {
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        ResponseEntity<Result<Usuario>> response = restTemplate.exchange(url + "/usuarios/" + idUsuario,
+                HttpMethod.GET,
+                HttpEntity.EMPTY,
+                new ParameterizedTypeReference<Result<Usuario>>() {
+        });
+
+        Result resultUsuario = response.getBody();
+
+        ResponseEntity<Result<List<Rol>>> responseRol = restTemplate.exchange(url + "/rol",
+                HttpMethod.GET,
+                HttpEntity.EMPTY,
+                new ParameterizedTypeReference<Result<List<Rol>>>() {
+        });
+
+        Result resultRol = responseRol.getBody();
+
+        ResponseEntity<Result<List<Pais>>> reponsePais = restTemplate.exchange(url + "/pais",
+                HttpMethod.GET,
+                HttpEntity.EMPTY,
+                new ParameterizedTypeReference<Result<List<Pais>>>() {
+        });
+        Result resultPais = reponsePais.getBody();
+
+        model.addAttribute("Paises", resultPais.Object);
+        model.addAttribute("Roles", resultRol.Object);//Agregado 12/12/2025
+        model.addAttribute("Usuario", resultUsuario.Object);
+
+        return "detalleUsuario";
+    }
+
+    @GetMapping("direccionForm/{idUsuario}")
+    @ResponseBody
+    public Result getDireccion(@PathVariable("idUsuario") int idUsuario, Model model, RedirectAttributes redirectAttributes) {
+
+       
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        ResponseEntity<Result<Usuario>> response = restTemplate.exchange(url +"/usuarios/"+ idUsuario,
+                HttpMethod.GET,
+                HttpEntity.EMPTY,
+                new ParameterizedTypeReference<Result<Usuario>>() {
+        });
+        Result result = response.getBody();
+        model.addAttribute("UsuarioD", result.Object);
+//        model.addAttribute("Paises", resultPais.Object);
+
+        return result;
+    }
 
     @GetMapping("getEstadoByPais/{idPais}")
     @ResponseBody
@@ -524,14 +545,10 @@ public class UsuarioController {
 //        model.addAttribute("UsuarioBusqueda", new Usuario());//creando usuario(vacio) para que pueda mandarse la busqueda
 ////        Result resultSearch = usuarioDaoImplementation.search(usuario);
 //
-//        ModelMapper modelMapper = new ModelMapper();
-//        vPerez.ProgramacionNCapasNov2025.JPA.Usuario usuarioJPA = modelMapper.map(usuario, vPerez.ProgramacionNCapasNov2025.JPA.Usuario.class);
-//        Result resultSearch = usuarioJpaDAOImplementation.GetAllDinamico(usuarioJPA);
+//   
 //
-//        Result resultRoles = rolDaoImplementation.getAll();
-//        model.addAttribute("Roles", resultRoles.Objects);
 //        model.addAttribute("Usuarios", resultSearch.Objects);
-//        model.addAttribute("usuariosEstatus", resultSearch.Objects);
+//        model.addAttribute("usuariosEstatus", resultSearch.Objects);//recargar el usuario
 //        return "Index";
 //
 //    }
