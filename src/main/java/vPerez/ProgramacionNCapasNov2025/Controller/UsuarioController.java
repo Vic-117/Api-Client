@@ -10,9 +10,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.text.SimpleDateFormat;
+import java.util.Base64;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -61,13 +65,14 @@ public class UsuarioController {
                     new ParameterizedTypeReference<Result<List<Usuario>>>() {
             });
             Result resultUsuario = responseEntity.getBody();
-            
-            ResponseEntity<Result<List<Rol>>> response = restTemplate.exchange(url+"/rol", HttpMethod.GET, HttpEntity.EMPTY, new ParameterizedTypeReference<Result<List<Rol>>>(){});
+
+            ResponseEntity<Result<List<Rol>>> response = restTemplate.exchange(url + "/rol", HttpMethod.GET, HttpEntity.EMPTY, new ParameterizedTypeReference<Result<List<Rol>>>() {
+            });
             Result resultRol = response.getBody();
             model.addAttribute("Usuarios", resultUsuario.Object);
             model.addAttribute("UsuarioBusqueda", new Usuario());
-            model.addAttribute("Roles",resultRol.Object);
-            
+            model.addAttribute("Roles", resultRol.Object);
+
         } catch (Exception ex) {
             System.out.println(ex.getCause());
         }
@@ -103,21 +108,41 @@ public class UsuarioController {
     }
 
     @PostMapping("add")
-    public String addUsuarioDireccion(@ModelAttribute("Usuario") Usuario usuario, Model model, RedirectAttributes redirectAttributes) {
-//      usuario.setEstatus(1);
-//        CAMBIAR METODO PARA ACTUALIZAR USUARIO
+    public String addUsuarioDireccion(@ModelAttribute("Usuario") Usuario usuario, @ModelAttribute("imagenInput") MultipartFile imagenInput,
+            Model model, RedirectAttributes redirectAttributes) throws IOException {
+        if(imagenInput != null){
+            long tamañoImagen = imagenInput.getSize();
+            if (tamañoImagen > 0) {
+                String extension = imagenInput.getOriginalFilename().split("\\.")[1];
+                if (extension.equals("png") || extension.equals("jpg") || extension.equals("jpeg")) {
+                    usuario.setImagen(Base64.getEncoder().encodeToString(imagenInput.getBytes()));
+                }
+            }
+        }
+
         if (usuario.getIdUsuario() == 0 && usuario.direcciones.get(0).getIdDireccion() == 0) { // agregar usuario direccion
 
-//                Result result = rolDaoImplementation.getAll();
-//                Result result = rolJpaDAOImplementation.getAll();
-//                model.addAttribute("Roles", result.Objects);
+            RestTemplate restTemplate = new RestTemplate();
+            HttpEntity<Usuario> requestEntity = new HttpEntity<>(usuario);
+            
+            ResponseEntity<Boolean> response = restTemplate.exchange(url+"/usuarios", HttpMethod.POST, requestEntity, new ParameterizedTypeReference<Boolean>() {
+            });
+             Result resultUsuario = new Result();
+             resultUsuario.Correct = response.getBody();
+            
+//             ResponseEntity<Result<List<Rol>>> responseRol = restTemplate.exchange(url+"rol", HttpMethod.GET, HttpEntity.EMPTY, new ParameterizedTypeReference<Result<List<Rol>>>(){});
+//
+//             Result resultRol= responseRol.getBody();
+//
+//
+//                model.addAttribute("Roles", resultRol.Objects);
             model.addAttribute("Usuario", usuario);
 //                if (result.Correct) {
 //                    redirectAttributes.addFlashAttribute("ErroresC", result.Correct);
 //                } else {
 //                    redirectAttributes.addFlashAttribute("ErroresC", result.Correct);
 //                }
-            return "Usuario";
+            return "redirect:/Usuario";
 
             //AGREGADO RECIENTEMENTE SOLO EL IF
 //                ModelMapper modelMapper = new ModelMapper();
@@ -132,11 +157,19 @@ public class UsuarioController {
 //                redirectAttributes.addFlashAttribute("ResultAgregar", "El usuario se agregó con exito"); // Agregado
         } else if (usuario.getIdUsuario() > 0 && usuario.direcciones == null) { // editar usuario
 
+            
+            RestTemplate restTemplate = new RestTemplate();
+            HttpEntity<Usuario> requestEntity = new  HttpEntity<>(usuario);
+            ResponseEntity<Result> response = restTemplate.exchange(url+"/usuarios/"+usuario.getIdUsuario(), 
+                    HttpMethod.PUT, 
+                    requestEntity, 
+                    new ParameterizedTypeReference<Result>(){});
+            
+            Result result = response.getBody();
 //            usuario.setPassword(usuario.getPassword());
             usuario.direcciones = new ArrayList<>();
             usuario.direcciones.add(new Direccion());
-//            ModelMapper modelMapper = new ModelMapper();
-//
+            
 //            vPerez.ProgramacionNCapasNov2025.JPA.Usuario usuarioEntidad = modelMapper.map(usuario, vPerez.ProgramacionNCapasNov2025.JPA.Usuario.class);
 //
 //            Result resultUpdateUsuario = usuarioJpaDAOImplementation.update(usuarioEntidad);
@@ -151,22 +184,27 @@ public class UsuarioController {
             return "redirect:/Usuario/detail/" + usuario.getIdUsuario();
 
         } else if ((usuario.getIdUsuario() > 0 && usuario.direcciones.get(0).getIdDireccion() > 0)) { // editar direccion
-
-//            ModelMapper modelMapper = new ModelMapper();
-//            vPerez.ProgramacionNCapasNov2025.JPA.Usuario usuarioJPA = modelMapper.map(usuario, vPerez.ProgramacionNCapasNov2025.JPA.Usuario.class);
-//            usuarioJPA.direcciones.get(0).Usuario = new vPerez.ProgramacionNCapasNov2025.JPA.Usuario();
-//            usuarioJPA.direcciones.get(0).Usuario.setIdUsuario(usuario.getIdUsuario());
+             RestTemplate restTemplate = new RestTemplate();
+             
+             HttpEntity<Direccion> httpEntity = new HttpEntity<>(usuario.direcciones.get(0));
+             
+             ResponseEntity<Result> response = restTemplate.exchange(url+"/direccion/"+usuario.direcciones.get(0).getIdDireccion(),
+                     HttpMethod.PUT, 
+                     httpEntity, 
+                     new ParameterizedTypeReference<Result>(){});
+             Result result = response.getBody();
 //            Result resultUpdateDireccion = direccionJpaDAOImplementation.update(usuarioJPA.direcciones.get(0));
             return "redirect:/Usuario/detail/" + usuario.getIdUsuario();
-//            return "redirect:/Usuario";
 
         } else if ((usuario.getIdUsuario() > 0 && usuario.direcciones.get(0).getIdDireccion() == 0)) { // agregar direccion
-//            ModelMapper modelMapper = new ModelMapper();
-//            vPerez.ProgramacionNCapasNov2025.JPA.Direccion direccionJpa = modelMapper.map(usuario.direcciones.get(0), vPerez.ProgramacionNCapasNov2025.JPA.Direccion.class);
-//            Result resultAddDireccion = direccionJpaDAOImplementation.add(direccionJpa, usuario.getIdUsuario());
-//            if (resultAddDireccion.Correct) {
-//                redirectAttributes.addFlashAttribute("resultadoOperacion", resultAddDireccion.Object);
-//            }
+            RestTemplate restTemplate = new RestTemplate();
+            HttpEntity<Direccion> requestEntity = new HttpEntity<>(usuario.direcciones.get(0));
+            
+            ResponseEntity<Result> response = restTemplate.exchange(url+"/direccion/agregar/"+usuario.getIdUsuario(), 
+                    HttpMethod.POST, 
+                    requestEntity, 
+                    new ParameterizedTypeReference<Result>() {
+                    });
             return "redirect:/Usuario/detail/" + usuario.getIdUsuario();
         }
 
@@ -211,13 +249,13 @@ public class UsuarioController {
 //
     @GetMapping("direccion/delete/{idDireccion}/{idUsuario}")
     public String deleteDireccion(@PathVariable("idDireccion") int idDireccion, @PathVariable("idUsuario") String idUsuario, RedirectAttributes redirectAttributes) {
-       RestTemplate restTemplate = new RestTemplate();
-       
-       ResponseEntity<Result<List<Direccion>>> response = restTemplate.exchange(url+"/direccion/"+idDireccion, HttpMethod.DELETE, HttpEntity.EMPTY, new ParameterizedTypeReference<Result<List<Direccion>>>() {
-       });
-       
-       Result result = response.getBody();
-       redirectAttributes.addFlashAttribute("DireccionBorrada",result.Correct);
+        RestTemplate restTemplate = new RestTemplate();
+
+        ResponseEntity<Result<List<Direccion>>> response = restTemplate.exchange(url + "/direccion/" + idDireccion, HttpMethod.DELETE, HttpEntity.EMPTY, new ParameterizedTypeReference<Result<List<Direccion>>>() {
+        });
+
+        Result result = response.getBody();
+        redirectAttributes.addFlashAttribute("DireccionBorrada", result.Correct);
         return "redirect:/Usuario/detail/" + idUsuario;//Lleva al endpoint
 //        return "Index; --- LLeva a una plantilla
     }
@@ -261,11 +299,9 @@ public class UsuarioController {
     @ResponseBody
     public Result getDireccion(@PathVariable("idUsuario") int idUsuario, Model model, RedirectAttributes redirectAttributes) {
 
-       
-
         RestTemplate restTemplate = new RestTemplate();
 
-        ResponseEntity<Result<Usuario>> response = restTemplate.exchange(url +"/usuarios/"+ idUsuario,
+        ResponseEntity<Result<Usuario>> response = restTemplate.exchange(url + "/usuarios/" + idUsuario,
                 HttpMethod.GET,
                 HttpEntity.EMPTY,
                 new ParameterizedTypeReference<Result<Usuario>>() {
@@ -540,17 +576,32 @@ public class UsuarioController {
 //        return "redirect:/Usuario";
 //    }
 //
-//    @PostMapping("/Search")
-//    public String buscarUsuarios(@ModelAttribute("Usuario") Usuario usuario, Model model) {
-//        model.addAttribute("UsuarioBusqueda", new Usuario());//creando usuario(vacio) para que pueda mandarse la busqueda
-////        Result resultSearch = usuarioDaoImplementation.search(usuario);
-//
-//   
-//
-//        model.addAttribute("Usuarios", resultSearch.Objects);
-//        model.addAttribute("usuariosEstatus", resultSearch.Objects);//recargar el usuario
-//        return "Index";
-//
-//    }
+
+    @PostMapping("/Search")
+    public String buscarUsuarios(@ModelAttribute("Usuario") Usuario usuario, Model model) {
+
+        model.addAttribute("UsuarioBusqueda", new Usuario());//creando usuario(vacio) para que pueda mandarse la busqueda
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<Usuario> requestEntity = new HttpEntity<>(usuario, headers);
+        RestTemplate restTemplate = new RestTemplate();
+        try {
+            ResponseEntity<Result<Usuario>> response = restTemplate.exchange(url + "/usuarios/busqueda",
+                    HttpMethod.POST,
+                    requestEntity,
+                    new ParameterizedTypeReference<Result<Usuario>>() {
+            });
+
+            Result result = response.getBody();
+            model.addAttribute("Usuarios", result.Objects);
+            model.addAttribute("usuariosEstatus", result.Objects);//recargar el usuario
+        } catch (Exception ex) {
+            System.out.println(ex);
+        }
+
+        return "Index";
+
+    }
 
 }

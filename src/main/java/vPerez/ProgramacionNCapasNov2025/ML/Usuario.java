@@ -42,6 +42,8 @@ public class Usuario {
     private String curp;
    
     private int estatus;
+    
+    private String imagen;
 
     public List<Direccion> direcciones;//Relacion del lado de 1, un usuario tiene muchas direcciones
 
@@ -163,6 +165,16 @@ public class Usuario {
     public void setEstatus(int estatus) {
         this.estatus = estatus;
     }
+
+    public String getImagen() {
+        return imagen;
+    }
+
+    public void setImagen(String imagen) {
+        this.imagen = imagen;
+    }
+    
+    
     
 
     public List<Direccion> getDirecciones() {

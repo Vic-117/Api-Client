@@ -15,14 +15,31 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <style>
             #usuario1{
-                transition: all 900ms ease-in-out;
+
+                transition: all 200ms ease-in-out;
+                object-fit: contain;
+                margin: 2rem 0;
+                /*border: double 5px black;*/
+                box-shadow: 2px 4px 3px #b4b1bd;
+                border-radius: 5px;
+                z-index: 2;
+
             }
+
             #usuario1:hover{
-                transform: scale(1.3);
-                z-index: 100;
-                opacity: 0.6;
-                box-shadow: 1px 1px 10px buttonshadow;
+                opacity: 0.5;
+                cursor: pointer;
             }
+
+            #btnAddImg{
+                position:absolute;
+                display: inline-block;
+                width: 30vh;
+                height: 20vh;
+                background-color: red;
+                z-index: 1;
+            }
+
 
             #info-user > p{
                 transition: all 450ms ease-in-out;
@@ -46,7 +63,8 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
         <section class="card col-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 mb-3 text-break" style="align-items: center; height: 99dvh" id="Seccion-Usuario" >
             <!--            <div class="card-title" id="usuario1" style="border:none">-->
 
-            <img class="card-img-top" id="usuario1" style=" width: 30vh; height: auto" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNT31I-b-Jdf8bjPM-mm-V1qCpb-oudRLvtw&s">
+
+            <img class="card-img-top" id="usuario1" style=" width: 30vh; height: auto" th:src="${Usuario.imagen != null ? 'data:image/*; base64,'+Usuario.imagen : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNT31I-b-Jdf8bjPM-mm-V1qCpb-oudRLvtw&s'}">
 
 
 
@@ -54,7 +72,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
             <div class="card-title text-center fw-bold btn btn-primary" disabled th:text="|${Usuario.nombre} ${Usuario.apellidoPaterno} ${Usuario.apellidoMaterno}|" style="z-index: 101"></div>
             <div class="card-body" id="info-user">
-
+                
                 <!--<div class="text-center" style="font-weight: 600; font-size: 1.5rem;">INFORMACION</div>-->
                 <p th:utext="|<b>Email:</b> ${Usuario.email}|"></p>
 
@@ -66,7 +84,12 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                 <p th:utext="|<b>Curp:</b> ${Usuario.curp}|"></p>
 
                 <!--<a href="url" class="btn btn-warning col-12" th:href="@{/Usuario/formularioEditable?idUsuario=}+${Usuario.idUsuario}">Editar</a>-->
-                <button class="btn btn-warning w-100"  onclick="cargarRol()"  data-bs-toggle="modal" data-bs-target="#my-modal" >Editar</button>
+                
+                <button class="btn btn-warning w-100 mb-3"  onclick="cargarRol()"  data-bs-toggle="modal" data-bs-target="#my-modal" >Editar</button>
+                <button class="btn btn-outline-secondary mb-3 col-12" id="btnFoto">Cambiar Foto</button>
+                <form enctype="multipart/form-data" method="POST" th:action="@{add}">
+                    <input type="file" hidden id="inputImg" class="mb-3"accept="image/*">
+                </form>
             </div>
 
 
@@ -133,8 +156,9 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
                         <form class="needs-validation" novalidate method="post" th:object="${Usuario}" th:action="@{/Usuario/add}" style="margin:2rem; flex-direction: column">
 
-                            <input type="hidden" th:field="${Usuario.idUsuario}">
                             <!--<input type="hidden" th:field="${Usuario.Direcciones[0].idDireccion}">-->
+                            <input type="hidden" th:field="${Usuario.idUsuario}">
+                            <input type="hidden" th:field="${Usuario.estatus}">
 
 
 
@@ -274,9 +298,9 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
 
 
-                     
+
                             </section >
- 
+
                             <div class="text-center">
 
                                 <button type="submit" class="btn  btn-outline-success col-2">Guardar</button> 
@@ -301,7 +325,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
 
 
-
+        <!--MODAL DIRECCION-->
         <section class="modal fade" id="modalDireccion">
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
@@ -425,191 +449,189 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
         <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 
         <script th:inline="javascript">
-            function cargarRol(){
-                                             $("#rolddl").val([[${Usuario.rol.idRol}]]);
+
+                                        function cargarRol(){
+                                        $("#rolddl").val([[${Usuario.rol.idRol}]]);
                                         }
+
+                                        $("#btnFoto").on("click", () => {
+                                        $("#inputImg").click();
+                                        });
+                                        
+                                         $("#inputImg").on("change",()=>{
+                                              $("#inputImg").submit();
+                                         })
         </script>
         <script>
 
-                                        const myModal = document.getElementById('my-Modal');
+            const myModal = document.getElementById('my-Modal');
 //                    const myInput = document.getElementById('myInput')
 
-                                        myModal.addEventListener('shown.bs.modal', () => {
-                                            myInput.focus();
-                                        });
-                                        const modalDirecciones = document.getElementById('ModalDireccion')
+            myModal.addEventListener('shown.bs.modal', () => {
+            myInput.focus();
+            });
+            const modalDirecciones = document.getElementById('ModalDireccion')
 //                    const myInput = document.getElementById('myInput')
 
-                                        modalDirecciones.addEventListener('shown.bs.modal', () => {
-                                            myInput.focus()
-                                        });
-                                        
-                                        
+                    modalDirecciones.addEventListener('shown.bs.modal', () => {
+                    myInput.focus()
+                    });
+            function paisddl() {
 
+            if ($("#ddlPais").val() == 0) {
+            $("#ddlEstado").empty();
+            $("#ddlEstado").append(" <option>Selecciona un Estado</option>");
+            } else {
 
+            //ajax para manejra peticiones asincronas
+            $.ajax({
 
-                                        function paisddl() {
-
-                                            if ($("#ddlPais").val() == 0) {
-                                                $("#ddlEstado").empty();
-                                                $("#ddlEstado").append(" <option>Selecciona un Estado</option>");
-
-                                            } else {
-
-                                                //ajax para manejra peticiones asincronas
-                                                $.ajax({
-                                                    
-                                                    url: "http://localhost:8081/api/estado/pais/" + $("#ddlPais").val(), //url de la peticion
-                                                    method: "GET", //tipo de accion
-                                                    dataType: 'json', // tipos de datos
-                                                    //Cuando la peticion fue exitosa:
-                                                    success: function (data, textStatus, jqXHR) {
-                                                        if (data.Correct) {
-                                                            //vacia el ddl para que no se dupliquen al ejecutar varias veces la acción
-                                                            $("#ddlEstado").empty();
-                                                            $("#ddlEstado").append(" <option value=0>Selecciona un Estado</option>");
-                                                            //itera sobre la lista de objetos y ejecuta la funcion de al lado
-                                                            $.each(data.Object, function (i, estado) {
-                                                                //En el input con el id: ddlEstado agrega una option con valores traidos de la petición
-                                                                $("#ddlEstado").append("<option value=" + estado.idEstado + ">" + estado.nombre + "</option>");
-                                                            });
-                                                        }
-                                                    },
-                                                    //Cuando hubo error en la petición 
-                                                    error: function (jqXHR, textStatus, errorThrown) {
-                                                        alert(textStatus);
-                                                    }
+            url: "http://localhost:8081/api/estado/pais/" + $("#ddlPais").val(), //url de la peticion
+                    method: "GET", //tipo de accion
+                    dataType: 'json', // tipos de datos
+                    //Cuando la peticion fue exitosa:
+                    success: function (data, textStatus, jqXHR) {
+                    if (data.Correct) {
+                    //vacia el ddl para que no se dupliquen al ejecutar varias veces la acción
+                    $("#ddlEstado").empty();
+                    $("#ddlEstado").append(" <option value=0>Selecciona un Estado</option>");
+                    //itera sobre la lista de objetos y ejecuta la funcion de al lado
+                    $.each(data.Object, function (i, estado) {
+                    //En el input con el id: ddlEstado agrega una option con valores traidos de la petición
+                    $("#ddlEstado").append("<option value=" + estado.idEstado + ">" + estado.nombre + "</option>");
+                    });
+                    }
+                    },
+                    //Cuando hubo error en la petición 
+                    error: function (jqXHR, textStatus, errorThrown) {
+                    alert(textStatus);
+                    }
 
 
 
 
 
-                                                });
-                                            }
+            });
+            }
 
 
 
 
-                                        }
+            }
 
 
 
-                                        function cambiarEstado() {
+            function cambiarEstado() {
 
-                                            if ($("#ddlEstado").val() == 0) {
-                                                $("#ddlMunicipio").empty();
-                                                $("#ddlMunicipio").append(" <option value=0>Selecciona un Municipio</option>");
-                                            } else {
-                                                $.ajax({
-                                                    url: "http://localhost:8081/api/municipio/estado/" + $("#ddlEstado").val(),
-                                                    method: "GET", //tipo de accion
-                                                    dataType: 'json', // tipos de datos
-                                                    success: function (data, textStatus, jqXHR) {
+            if ($("#ddlEstado").val() == 0) {
+            $("#ddlMunicipio").empty();
+            $("#ddlMunicipio").append(" <option value=0>Selecciona un Municipio</option>");
+            } else {
+            $.ajax({
+            url: "http://localhost:8081/api/municipio/estado/" + $("#ddlEstado").val(),
+                    method: "GET", //tipo de accion
+                    dataType: 'json', // tipos de datos
+                    success: function (data, textStatus, jqXHR) {
 
-                                                        if (data.Correct) {
-                                                            $("#ddlMunicipio").empty();
-                                                            $("#ddlMunicipio").append(" <option value=0>Selecciona un Municipio</option>");
-                                                            $.each(data.Object, function (i, municipio) {
-                                                                //                                                En el input con el id: ddlEstado agrega una option con valores traidos de la petición
-                                                                $("#ddlMunicipio").append("<option value=" + municipio.idMunicipio + ">" + municipio.nombre + "</option>");
-                                                            });
-                                                        }
+                    if (data.Correct) {
+                    $("#ddlMunicipio").empty();
+                    $("#ddlMunicipio").append(" <option value=0>Selecciona un Municipio</option>");
+                    $.each(data.Object, function (i, municipio) {
+                    //                                                En el input con el id: ddlEstado agrega una option con valores traidos de la petición
+                    $("#ddlMunicipio").append("<option value=" + municipio.idMunicipio + ">" + municipio.nombre + "</option>");
+                    });
+                    }
 
-                                                    },
-                                                    error: function () {
-                                                        alert("Hubo un error...");
-                                                    }
-                                                });
-                                            }
-                                        }
-
-
-                                        function cambiaMunicipio() {
-
-                                            if ($("#ddlMunicipio").val() == 0) {
-                                                $("#ddlColonia").empty();
-                                                $("#ddlColonia").append(" <option value=0>Selecciona la Colonia</option>");
-                                            } else {
-                                                //                                
-                                                $.ajax({
-                                                    url: "http://localhost:8081/api/colonia/municipio/" + $("#ddlMunicipio").val(),
-                                                    method: "GET",
-                                                    dataType: 'json',
-                                                    success: function (data, textStatus, jqXHR) {
-                                                        if (data.Correct) {
-                                                            $("#ddlColonia").empty();
-                                                            $("#ddlColonia").append(" <option value=0>Selecciona la Colonia</option>");
-                                                            $.each(data.Object, function (i, colonia) {
-                                                                $("#ddlColonia").append("<option value=" + colonia.idColonia + ">" + colonia.nombre + "</option>");
-                                                            });
-                                                            //                                             
-                                                        }
-                                                        ;
-                                                        //                                         if (data.Correct) {
-                                                        //                                            $("#ddlMunicipio").empty();
-                                                        //                                            $("#ddlMunicipio").append(" <option value=0>Selecciona un Municipio</option>");
-                                                        //                                            $.each(data.Objects, function (i, municipio) {
-                                                        ////                                                En el input con el id: ddlEstado agrega una option con valores traidos de la petición
-                                                        //                                                $("#ddlMunicipio").append("<option value=" + municipio.idMunicipio + ">" + municipio.nombre + "</option>");
-                                                        //                                            });
-                                                        //                                        }
-                                                    },
-                                                    error: function () {
-                                                        alert("Algo salió mal...");
-                                                    }
-                                                });
-                                            }
-                                        }
-
-                                        function EditarDireccion(idUsuario, idDireccion) {
-                                            $("#Dircalle,#noExterior,#noInterior").val("");
-                                             $("#ddlPais").val("0");
-                                            $.ajax({
-                                                url: "/Usuario/direccionForm/" + idUsuario,
-                                                type: "GET",
-                                                dataType: "json",
-                                                success: function (data) {
-                                                    $.each(data.Object.direcciones, (i, direccion) => {
-                                                        if (parseInt(direccion.idDireccion) === parseInt(idDireccion)) {
-                                                            console.log(direccion.calle);
-                                                            $("#ddlEstado").empty();
-                                                            $("#ddlColonia").empty();
-                                                            $("#ddlMunicipio").empty();
-                                                           
+                    },
+                    error: function () {
+                    alert("Hubo un error...");
+                    }
+            });
+            }
+            }
 
 
-                                                            $("#Dircalle").val(direccion.calle);
-                                                            $("#noExterior").val(direccion.numeroExterior);
-                                                            $("#noInterior").val(direccion.numeroInterior);
-                                                            $("#idCol").val(direccion.colonia.idColonia);
-                                                            $("#ddlPais").val(direccion.colonia.municipio.estado.pais);
+            function cambiaMunicipio() {
+
+            if ($("#ddlMunicipio").val() == 0) {
+            $("#ddlColonia").empty();
+            $("#ddlColonia").append(" <option value=0>Selecciona la Colonia</option>");
+            } else {
+            //                                
+            $.ajax({
+            url: "http://localhost:8081/api/colonia/municipio/" + $("#ddlMunicipio").val(),
+                    method: "GET",
+                    dataType: 'json',
+                    success: function (data, textStatus, jqXHR) {
+                    if (data.Correct) {
+                    $("#ddlColonia").empty();
+                    $("#ddlColonia").append(" <option value=0>Selecciona la Colonia</option>");
+                    $.each(data.Object, function (i, colonia) {
+                    $("#ddlColonia").append("<option value=" + colonia.idColonia + ">" + colonia.nombre + "</option>");
+                    });
+                    //                                             
+                    }
+                    ;
+                    //                                         if (data.Correct) {
+                    //                                            $("#ddlMunicipio").empty();
+                    //                                            $("#ddlMunicipio").append(" <option value=0>Selecciona un Municipio</option>");
+                    //                                            $.each(data.Objects, function (i, municipio) {
+                    ////                                                En el input con el id: ddlEstado agrega una option con valores traidos de la petición
+                    //                                                $("#ddlMunicipio").append("<option value=" + municipio.idMunicipio + ">" + municipio.nombre + "</option>");
+                    //                                            });
+                    //                                        }
+                    },
+                    error: function () {
+                    alert("Algo salió mal...");
+                    }
+            });
+            }
+            }
+
+            function EditarDireccion(idUsuario, idDireccion) {
+            $("#Dircalle,#noExterior,#noInterior").val("");
+            $("#ddlPais").val("0");
+            $.ajax({
+            url: "/Usuario/direccionForm/" + idUsuario,
+                    type: "GET",
+                    dataType: "json",
+                    success: function (data) {
+                    $.each(data.Object.direcciones, (i, direccion) => {
+                    if (parseInt(direccion.idDireccion) === parseInt(idDireccion)) {
+                    console.log(direccion.calle);
+                    $("#ddlEstado").empty();
+                    $("#ddlColonia").empty();
+                    $("#ddlMunicipio").empty();
+                    $("#hiddenDirId").val(direccion.idDireccion);
+                    $("#Dircalle").val(direccion.calle);
+                    $("#noExterior").val(direccion.numeroExterior);
+                    $("#noInterior").val(direccion.numeroInterior);
+                    $("#idCol").val(direccion.colonia.idColonia);
+                    $("#ddlPais").val(direccion.colonia.municipio.estado.pais);
 //                                                            console.log( direccion.colonia.municipio.estado.pais.nombre);
-                                                            idPais = $("#ddlPais").val(direccion.colonia.municipio.estado.pais.idPais).attr("selected", true);
-                                                            if (idPais.length > 0) {
-                                                                $("#ddlEstado").append("<option value=" + direccion.colonia.municipio.estado.idEstado + ">" + direccion.colonia.municipio.estado.nombre + "</option>");
-                                                                $("#ddlEstado").val(direccion.colonia.municipio.estado.idEstado).attr("selected", true);
-                                                            }
-                                                            if ($("#ddlEstado").val(direccion.colonia.municipio.estado.idEstado).length > 0) {
-                                                                $("#ddlColonia").append("<option value=" + direccion.colonia.idColonia + " >" + direccion.colonia.nombre + "</option>");
-                                                                $("#ddlColonia").val(direccion.colonia.idColonia);
-
-                                                            }
-                                                            console.log(idPais.length);
+                    idPais = $("#ddlPais").val(direccion.colonia.municipio.estado.pais.idPais).attr("selected", true);
+                    if (idPais.length > 0) {
+                    $("#ddlEstado").append("<option value=" + direccion.colonia.municipio.estado.idEstado + ">" + direccion.colonia.municipio.estado.nombre + "</option>");
+                    $("#ddlEstado").val(direccion.colonia.municipio.estado.idEstado).attr("selected", true);
+                    }
+                    if ($("#ddlEstado").val(direccion.colonia.municipio.estado.idEstado).length > 0) {
+                    $("#ddlColonia").append("<option value=" + direccion.colonia.idColonia + " >" + direccion.colonia.nombre + "</option>");
+                    $("#ddlColonia").val(direccion.colonia.idColonia);
+                    }
+                    console.log(idPais.length);
 //                                                            $("#ddlEstado").val(direccion.colonia.municipio.estado.idEstado);
-                                                            $("#ddlMunicipio").append("<option value=" + direccion.colonia.municipio.idMunicipio + " >" + direccion.colonia.municipio.nombre + "</option>");
-                                                            $("#ddlMunicipio").val(direccion.colonia.municipio.idMunicipio);
-
-
-                                                        }
+                    $("#ddlMunicipio").append("<option value=" + direccion.colonia.municipio.idMunicipio + " >" + direccion.colonia.municipio.nombre + "</option>");
+                    $("#ddlMunicipio").val(direccion.colonia.municipio.idMunicipio);
+                    }
 //                                                          $("#ddlEstado").empty();
 //                                                         $("#ddlColonia").empty();
-                                                    });
-                                                },
-                                                error: function (jqXHR, textStatus, errorThrown) {
-                                                    console.error("Error en AJAX:", textStatus, errorThrown);
-                                                }
-                                            });
-                                        }
+                    });
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                    console.error("Error en AJAX:", textStatus, errorThrown);
+                    }
+            });
+            }
 
 
 
@@ -621,9 +643,8 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
         <script>
 
             $("#btnSubmitDireccion").on("load", () => {
-                $("#hiddenDirId").removeData();
+            $("#hiddenDirId").removeData();
             });
-
 //            $("#modalDireccion").on("load", () => {
 //                
 //            });
@@ -633,16 +654,15 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
             //CAMBIAR EL VALOR QUE YA SE ENCONTRABA EN EL INPUT HIDDEN CREADO CON THYMELEAF
             function AgregarDireccion() {
-                $("#Dircalle,#noExterior,#noInterior,#idCol").val("");
-                $("#ddlPais").val("0");
+            $("#Dircalle,#noExterior,#noInterior,#idCol").val("");
+            $("#ddlPais").val("0");
 //                paisddl();
 //                cambiarEstado();
 //                cambiaMunicipio();
 //                $("#ddlEstado").append("<option value=" + estado.idEstado + ">" + estado.nombre + "</option>");
 //                $("#ddlColonia").append("<option value=" + colonia.idColonia + ">" + colonia.nombre + "</option>");
 //                $("#ddlMunicipio").append("<option value=" + municipio.idMunicipio + ">" + municipio.nombre + "</option>");
-                $("#hiddenDirId").val("0");
-
+            $("#hiddenDirId").val("0");
             }
         </script>
 

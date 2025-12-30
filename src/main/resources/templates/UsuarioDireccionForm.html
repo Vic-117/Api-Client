@@ -37,7 +37,7 @@
     <body class="container col-sm-12 col-md-10 col-lg-9 " style="background-color:#F2F2F2;align-items: center">
 
 
-        <form class="" method="post" th:object="${Usuario}" th:action="@{add}" style="margin:2rem; flex-direction: column">
+        <form class="" method="post" th:object="${Usuario}" th:action="@{add}" enctype="multipart/form-data"  style="margin:2rem; flex-direction: column">
 
             <input type="hidden" th:field="${Usuario.idUsuario}">
             <!--a veces da -1 y otras 1-->
@@ -48,6 +48,8 @@
 
             <!--SECCION DEL USUARIO-->
             <section class="container" style="" th:if="${(Usuario.idUsuario == 0 && Usuario.direcciones[0].idDireccion == 0) || (Usuario.idUsuario !=0 && Usuario.direcciones[0].idDireccion == -1)  }">
+                
+                
                 <center>
                     <br>
                     <h1 style="font-family: sans-serif; font-size: 2.5rem; font-weight: bold;
@@ -55,6 +57,14 @@
                     </h1>
                     <!--<hr>-->
                 </center>
+                
+                <!--IMAGEN PERFIL-->
+                <div class="row mb-3">
+                    <label class="input-group-text fw-bold ">Imagen de Usuario</label>
+                    <input type="file" class="form-control text-primary" name="imagenInput"  id="input-image" accept="image/*">
+                    <span class="text-danger mb-3 "  th:if="${#fields.hasErrors('imagen')}" th:errors="${Usuario.imagen}" style="font-size: 0.8rem" />
+                   
+                </div>
 
                 <div class=" row" style="">
 
