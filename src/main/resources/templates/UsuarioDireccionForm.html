@@ -48,8 +48,8 @@
 
             <!--SECCION DEL USUARIO-->
             <section class="container" style="" th:if="${(Usuario.idUsuario == 0 && Usuario.direcciones[0].idDireccion == 0) || (Usuario.idUsuario !=0 && Usuario.direcciones[0].idDireccion == -1)  }">
-                
-                
+
+
                 <center>
                     <br>
                     <h1 style="font-family: sans-serif; font-size: 2.5rem; font-weight: bold;
@@ -57,13 +57,13 @@
                     </h1>
                     <!--<hr>-->
                 </center>
-                
+
                 <!--IMAGEN PERFIL-->
                 <div class="row mb-3">
                     <label class="input-group-text fw-bold ">Imagen de Usuario</label>
-                    <input type="file" class="form-control text-primary" name="imagenInput"  id="input-image" accept="image/*">
+                    <input type="file" class="form-control text-primary" name="imagenInput"  id="input-image" accept="image/*" required>
                     <span class="text-danger mb-3 "  th:if="${#fields.hasErrors('imagen')}" th:errors="${Usuario.imagen}" style="font-size: 0.8rem" />
-                   
+
                 </div>
 
                 <div class=" row" style="">
@@ -85,10 +85,16 @@
 
                     <input type="text" class="form-control mb-3" placeholder="Paterno"  th:field="*{apellidoPaterno}" onkeypress="soloLetras(event, this)">
                     <span class="text-danger " style="font-size: 0.8rem" th:if="${#fields.hasErrors('apellidoPaterno')}" th:errors="${Usuario.apellidoPaterno}" />
+                    <span class="error-message row mb-3" style="font-size: 0.8rem" />
+
+                </div>
+
+                <div class="row" style="" >
 
                     <input type="text" class="form-control" placeholder="Materno" th:field="*{apellidoMaterno}" onkeypress="soloLetras(event, this)">
                     <span class="error-message row" style="font-size: 0.8rem" />
                     <span class="text-danger col-2" style="font-size: 0.8rem;" th:if="${#fields.hasErrors('apellidoMaterno')}" th:errors="${Usuario.apellidoMaterno}" />
+
                 </div>
 
 
@@ -103,7 +109,7 @@
 
                     </span>
 
-                    <input type="text" class="form-control " placeholder="Correo" th:field="*{email}" onblur="emailValidator(this)">
+                    <input type="text" class="form-control " placeholder="Correo" th:field="*{email}" onblur="emailValidator(this)" required>
                     <span class="text-danger " style="font-size: 0.8rem;" th:if="${#fields.hasErrors('email')}" th:errors ='${Usuario.email}' />
                     <span id="emailMessage" ></span>
                 </div>
@@ -124,7 +130,7 @@
                 <div class="row mb-3" style="">
 
                     <span class="input-group-text fw-bold"> <i class="bi bi-telephone"></i>Telefono:</span>
-                    <input type = "number" placeholder="Telefono" class="form-control " th:field="*{telefono}" onblur="validarNumero(this)">
+                    <input type = "number" placeholder="Telefono" class="form-control " th:field="*{telefono}" onblur="validarNumero(this)" required>
 
                     <span class="error-message mb-3 row" style="font-size: 0.8rem" />
                     <span class="text-danger  row" style="font-size: 0.8rem" th:if="${#fields.hasErrors('telefono')}" th:errors="${Usuario.telefono}" />
@@ -134,7 +140,7 @@
                 <div class="row" style="">
 
                     <span class="input-group-text fw-bold" > <i class="bi bi-phone"></i>celular</span>
-                    <input type = "number" placeholder="Celular" class="form-control" th:field="*{celular}" onblur="validarNumero(this)">
+                    <input type = "number" placeholder="Celular" class="form-control" th:field="*{celular}" onblur="validarNumero(this)" required>
                     <span class="error-message mb-3 row" style="font-size: 0.8rem" />
                     <span class="text-danger  row" style="font-size: 0.8rem" th:if="${#fields.hasErrors('celular')}" th:errors="${Usuario.celular}"/>
                     <!--<span class="text-danger  row" style="font-size: 0.8rem" th:if="${#fields.hasErrors('telefono')}" th:errors="${Usuario.telefono}" />-->
@@ -151,13 +157,13 @@
                     <span class="input-group-text fw-bold ">Sexo:</span>
                     <span class="input-group-text  col-3">Femenino:</span>
                     <div class="input-group-text col-1" style="background-color:#A8BCD1">
-                        <input type = "radio" value="F" id="femenino" name="sexo" class="form-check-input mt-0" th:field="*{sexo}"   th:checked="*{sexo == 'F'}">
+                        <input type = "radio" value="F" id="femenino" name="sexo" class="form-check-input mt-0" th:field="*{sexo}"   th:checked="*{sexo == 'F'}" required>
 
 
                     </div>
                     <span class="input-group-text  col-3">Masculino:</span>
                     <div class="input-group-text col-1" style="background:#A8BCD1 ">
-                        <input type = "radio" value="M" id="masculino" name="sexo" class="form-check-input mt-0" th:field="*{sexo}" th:checked="*{sexo == 'M'}" >
+                        <input type = "radio" value="M" id="masculino" name="sexo" class="form-check-input mt-0" th:field="*{sexo}" th:checked="*{sexo == 'M'}" required>
                     </div>
                 </div>
 
@@ -165,7 +171,7 @@
 
                 <div class="row mb-3" style="">
                     <label class="input-group-text fw-bold ">Fecha de Nacimiento:</label>
-                    <input type = "date" class="form-control col-sm-8 col-md-6" th:field="*{fechaNacimiento}" onblur="validarNacimiento(this)">
+                    <input type = "date" class="form-control col-sm-8 col-md-6" th:field="*{fechaNacimiento}" onblur="validarNacimiento(this)" required>
                     <span class="error-message mb-3 row" style="font-size: 0.8rem" />
                     <span class="text-danger  row" style="font-size: 0.8rem"  th:if="${#fields.hasErrors('fechaNacimiento')}" th:errors='${Usuario.fechaNacimiento}'/>
 
@@ -178,7 +184,7 @@
 
                 <div class="row" style="">
                     <label class="input-group-text fw-bold">CURP:</label>
-                    <input type = "text" placeholder="CURP" class="form-control col-10" th:field="*{curp}" onblur="validarCurp(this)"> 
+                    <input type = "text" placeholder="CURP" class="form-control col-10" th:field="*{curp}" onblur="validarCurp(this)" required> 
                     <span class="error-message mb-3 row" style="font-size: 0.8rem" />
                     <span class="text-danger  row" style="font-size: 0.8rem" th:if="${#fields.hasErrors('curp')}" th:errors="${Usuario.curp}"/>
 
@@ -186,7 +192,7 @@
 
                 <div class="row" style="" >
                     <span class="input-group-text fw-bold">Rol:</span>
-                    <select class="form-control" th:field="*{Rol.idRol}" onblur="validarRol(this)">
+                    <select class="form-control" th:field="*{Rol.idRol}" onblur="validarRol(this)" required>
                         <option value=0>Elige tu rol</option>
                         <option th:each="rol:${Roles}"  th:text="${rol.nombre}" th:value="${rol.idRol}" ></option>
                     </select>
@@ -214,20 +220,22 @@
 
                 <div class="row mb-3" style="">
                     <label class="input-group-text fw-bold">calle</label>
-                    <input type="text" class="form-control mb-3" th:field="${Usuario.direcciones[0].calle}" onkeypress="validarCalle(event, this)">
-                    <span class="error-message mb-3 row" style="font-size: 0.8rem" />
+                    <input type="text" required class="form-control mb-3" th:field="${Usuario.direcciones[0].calle}" onblur="validarCalle(this)">
+                    <span class="error-message mb-3 row" id="calleMensaje" style="font-size: 0.8rem" />
                     <span class="text-danger mb-3 row" style="font-size: 0.8rem" th:if="${#fields.hasErrors('direcciones[0].calle')}" th:errors="$(direcciones[0].calle)"/>
                 </div>
 
                 <div class="row  mb-3" style="">
 
                     <label class="input-group-text fw-bold">No.Interior</label>
-                    <input type="text" class="form-control mb-3 " th:field="*{direcciones[0].numeroInterior}">
+                    <input type="text" required class="form-control mb-3 " th:field="*{direcciones[0].numeroInterior}"  onblur="validarNumeroCalle(this)">
+                     <span class="error-message mb-3 row" style="font-size: 0.8rem" />
                 </div>
 
                 <div class="row  mb-3" style="">
                     <label class="input-group-text fw-bold">No.Exterior</label>
-                    <input type="text" class="form-control" th:field="*{direcciones[0].numeroExterior}">
+                    <input type="text" required class="form-control" th:field="*{direcciones[0].numeroExterior}"  onblur="validarNumeroCalle(this)">
+                     <span class="error-message mb-3 row" style="font-size: 0.8rem" />
 
                 </div>
 
@@ -240,7 +248,7 @@
 
                 <div class="row  mb-3" style="">
                     <label class="input-group-text fw-bold" >Pais:</label>
-                    <select class="form-control" id="ddlPais" >
+                    <select required class="form-control" id="ddlPais" >
                         <!--th:field="${Usuario.direcciones[0].colonia.municipio.estado.pais}"-->
                         <!--                     usuario.direcciones.get(0).getColonia().getMunicipio().getEstado().pais.setIdPais(resultSet.getInt("IDPAIS"));-->
                         <option value="0">Elige un pais de la lista</option>
@@ -251,7 +259,7 @@
 
                 <div class="row mb-3">
                     <label class="input-group-text fw-bold" >Estado:</label>
-                    <select  class="form-control" id="ddlEstado" >
+                    <select required class="form-control" id="ddlEstado" >
                         <option value=0>Selecciona un Estado</option>
 
                     </select>
@@ -259,14 +267,14 @@
 
                 <div class="row mb-3">
                     <label class="input-group-text fw-bold " >Municipio:</label>
-                    <select  class="form-control" id="ddlMunicipio"  th:field="*{direcciones[0].colonia.municipio.idMunicipio}">
+                    <select required class="form-control" id="ddlMunicipio"  th:field="*{direcciones[0].colonia.municipio.idMunicipio}">
                         <option value=0>Selecciona un Municipio</option>
                     </select>
                 </div>
 
                 <div class="row mb-3">
                     <label class="input-group-text fw-bold" >Colonia:</label>
-                    <select class="form-control" id="ddlColonia" th:field="*{direcciones[0].colonia.idColonia}">
+                    <select required class="form-control" id="ddlColonia" th:field="*{direcciones[0].colonia.idColonia}">
                         <option value=0>Selecciona la Colonia</option>
                     </select>
                 </div>
@@ -292,297 +300,328 @@
         <script>
                         function soloLetras(event, input) {
 
-                        let key = event.key;
-                        let regExpres = /[a-zA-ZÁÉÍÓÚáéíóú ]+/;
-                        let ascci = event.charCode;
-                        if (ascci == 32 || ascci >= 65 && ascci <= 90 || ascci >= 97 && ascci <= 122) {
-                        if (regExpres.test(key)) {
-                        $(input).removeClass("invalidText").addClass("correct");
-                        $(input).siblings(".error-message").text("");
-                        }
+                            let key = event.key;
+                            let regExpres = /[a-zA-ZÁÉÍÓÚáéíóú ]+/;
+                            let ascci = event.charCode;
+                            if (ascci == 32 || ascci >= 65 && ascci <= 90 || ascci >= 97 && ascci <= 122) {
+                                if (regExpres.test(key)) {
+                                    $(input).removeClass("invalidText").addClass("correct");
+                                    $(input).siblings(".error-message").text("");
+                                }
 
-                        } else {
-                        $(input).removeClass("correct").addClass("invalidText");
-                        $(input).siblings(".error-message").text(" Solo se permiten letras");
-                        setTimeout(() => {
-                        $(input).removeClass("invalidText");
-                        $(input).siblings(".error-message").text("");
-                        }, 3000);
-                        event.preventDefault();
-                        }
+                            } else {
+                                $(input).removeClass("correct").addClass("invalidText");
+                                $(input).siblings(".error-message").text(" Solo se permiten letras");
+                                setTimeout(() => {
+                                    $(input).removeClass("invalidText");
+                                    $(input).siblings(".error-message").text("");
+                                }, 3000);
+                                event.preventDefault();
+                            }
 
 
                         }
 
 
                         function emailValidator(thisInput) {
-                        let cadena = $(thisInput).val();
-                        const regExpres = /^([A-Z|a-z|0-9](\.|_){0,1})+[A-Z|a-z|0-9]\@([A-Z|a-z|0-9])+((\.){0,1}[A-Z|a-z|0-9]){2}\.[a-z]{2,3}$/;
-                        if (regExpres.test(cadena)) {
-                        console.log("Correo valido");
-                        $(thisInput).removeClass("invalidText").addClass("correct");
-                        setTimeout(() => {
-                        $(thisInput).removeClass("correct");
-                        }, 4000);
-                        } else {
-                        $(thisInput).addClass("invalidText");
-                        $("#emailMessage").text("Correo no valido");
-                        console.log("Correo no valido");
-                        setTimeout(() => {
-
-                        $("#emailMessage").text("");
-                        $(thisInput).removeClass("invalidText");
-                        }, 4000);
-                        }
+                            let cadena = $(thisInput).val();
+                            const regExpres = /^([A-Z|a-z|0-9](\.|_){0,1})+[A-Z|a-z|0-9]\@([A-Z|a-z|0-9])+((\.){0,1}[A-Z|a-z|0-9]){2}\.[a-z]{2,3}$/;
+                            if (regExpres.test(cadena)) {
+                                console.log("Correo valido");
+                                $(thisInput).removeClass("invalidText").addClass("correct");
+                                $("#emailMessage").text("");
+                                setTimeout(() => {
+                                    $(thisInput).removeClass("correct");
+                                }, 5000);
+                            } else {
+                                $(thisInput).addClass("invalidText");
+                                $("#emailMessage").text("Correo no valido");
+                                console.log("Correo no valido");
+//                        setTimeout(() => {
+//
+//                        $("#emailMessage").text("");
+////                        $(thisInput).removeClass("invalidText");
+//                        }, 5000);
+                            }
                         }
 
                         function passVal(thisInput) {
-                        const regEx = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/;
-                        const inputText = $(thisInput).val();
-                        if (regEx.test(inputText) && inputText.length < 50) {
-                        $(thisInput).removeClass("invalidText").addClass("correct");
-                        //                                $(thisInput).siblings(".error-message").text("Correcto");
-                        setTimeout(() => {
-                        $(thisInput).removeClass("correct");
-                        }, 3700);
-                        console.log("Contraseña valida");
-                        } else {
+                            const regEx = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/;
+                            const inputText = $(thisInput).val();
+                            if (regEx.test(inputText) && inputText.length < 50) {
+                                $(thisInput).siblings(".error-message").text("");
+                                $(thisInput).removeClass("invalidText").addClass("correct");
+                                //                                $(thisInput).siblings(".error-message").text("Correcto");
+                                setTimeout(() => {
+                                    $(thisInput).removeClass("correct");
+                                }, 3700);
+                                console.log("Contraseña valida");
+                            } else {
 
-                        $(thisInput).removeClass("correct").addClass("invalidText");
-                        $(thisInput).siblings(".error-message").text("Contraseña no valida");
-                        setTimeout(() => {
-                        //                                     $(thisInput).removeClass("invalidText");
-                        $(thisInput).siblings(".error-message").text("");
-                        }, 3700);
-                        console.log("Contraseña no valida");
-                        console.log("Escribe una contraseña más corta");
-                        }
+                                $(thisInput).removeClass("correct").addClass("invalidText");
+                                $(thisInput).siblings(".error-message").text("Contraseña no valida");
+//                        setTimeout(() => {
+////                                                             $(thisInput).removeClass("invalidText");
+////                        $(thisInput).siblings(".error-message").text("");
+//                        }, 3700);
+                                console.log("Contraseña no valida");
+                                console.log("Escribe una contraseña más corta");
+                            }
 
 
                         }
                         function validarNumero(thisInput) {
 
-                        const regExp = /^\s*(?:\+?(\d{1,3}))?([-. (]*(\d{3})[-. )]*)?((\d{3})[-. ]*(\d{2,4})(?:[-.x ]*(\d+))?)\s*$/;
-                        const cadena = $(thisInput).val();
-                        if (regExp.test(cadena) && cadena.length < 12) {
-                        $(thisInput).removeClass("invalidText").addClass("correct");
-                        //                                $(thisInput).siblings(".error-message").text("Correcto");
-                        setTimeout(() => {
-                        $(thisInput).removeClass("correct");
-                        }, 3700);
-                        } else {
-                        $(thisInput).removeClass("correct").addClass("invalidText");
-                        $(thisInput).siblings(".error-message").text("Numero no valido");
-                        setTimeout(() => {
-                        //                                     $(thisInput).removeClass("invalidText");
-                        $(thisInput).siblings(".error-message").text("");
-                        }, 3700);
+                            const regExp = /^\s*(?:\+?(\d{1,3}))?([-. (]*(\d{3})[-. )]*)?((\d{3})[-. ]*(\d{2,4})(?:[-.x ]*(\d+))?)\s*$/;
+                            const cadena = $(thisInput).val();
+                            if (regExp.test(cadena) && cadena.length < 12) {
+                                $(thisInput).siblings(".error-message").text("");
+                                $(thisInput).removeClass("invalidText").addClass("correct");
+                                //                                $(thisInput).siblings(".error-message").text("Correcto");
+                                setTimeout(() => {
+                                    $(thisInput).removeClass("correct");
+                                }, 3700);
+                            } else {
+                                $(thisInput).removeClass("correct").addClass("invalidText");
+                                $(thisInput).siblings(".error-message").text("Numero no valido");
+
+                            }
+
+
                         }
+                        function validarNumeroCalle(thisInput) {
+
+                            const regExp = /^[+-]?(\.\d+|\d+\.|\d+|\d+\.?\d+|\d*\.?\d*[Ee][+-]?\d*)$/;
+                            const cadena = $(thisInput).val();
+                            if (regExp.test(cadena) && cadena.length < 6 &&  cadena.length > 0) {
+                                $(thisInput).siblings(".error-message").text("");
+                                $(thisInput).removeClass("invalidText").addClass("correct");
+                                //                                $(thisInput).siblings(".error-message").text("Correcto");
+                                setTimeout(() => {
+                                    $(thisInput).removeClass("correct");
+                                }, 3700);
+                            } else {
+                                $(thisInput).removeClass("correct").addClass("invalidText");
+                                $(thisInput).siblings(".error-message").text("Solo se permiten numeros enteros");
+
+                            }
 
 
                         }
 
                         function validarSexo() {
-                        const seleccionado = $('input[name = "sexo"]:checked');
-                        if (seleccionado.length == 0) {
-                        console.log("Selecciona una opción");
-                        }
+                            const seleccionado = $('input[name = "sexo"]:checked');
+                            if (seleccionado.length == 0) {
+                                console.log("Selecciona una opción");
+                            }
 
 
                         }
 
                         function validarNacimiento(thisInput) {
-                        const fecha = $(thisInput).val();
-                        const regEx = /([\d]+)([\-\./])([\d]+)([\-\./])([\d]+)|((Jan(|uary)|Feb(|ruary)|Mar(|ch)|Apr(|il)|May|Jun(|e)|Jul(|y)|Aug(|ust)|Sept(|ember)|Oct(|ober)|(Nov|Dec)(|ember))([\s\-])(|([\d]+){1,2}([\s\-]|\, ))([\d]+){4})/;
-                        if (regEx.test(fecha)) {
-                        $(thisInput).removeClass("invalidText").addClass("correct");
-                        //                               
-                        setTimeout(() => {
-                        $(thisInput).removeClass("correct");
-                        }, 3700);
-                        } else {
-                        $(thisInput).removeClass("correct").addClass("invalidText");
-                        $(thisInput).siblings(".error-message").text("Fecha no valida");
-                        setTimeout(() => {
-                        //                                     $(thisInput).removeClass("invalidText");
-                        $(thisInput).siblings(".error-message").text("");
-                        }, 3700);
-                        }
+                            const fecha = $(thisInput).val();
+                            const regEx = /([\d]+)([\-\./])([\d]+)([\-\./])([\d]+)|((Jan(|uary)|Feb(|ruary)|Mar(|ch)|Apr(|il)|May|Jun(|e)|Jul(|y)|Aug(|ust)|Sept(|ember)|Oct(|ober)|(Nov|Dec)(|ember))([\s\-])(|([\d]+){1,2}([\s\-]|\, ))([\d]+){4})/;
+                            let dia = (new Date().getUTCDate()+1);
+                            let mes = new Date().getUTCMonth()+1;
+                            let fechaMañana = mes + "-"+dia ;
+                           
+                            let fechaNacimiento = fecha.slice(5);
+                            if (regEx.test(fecha) && fechaMañana !== fechaNacimiento) {
+
+                               
+                                $(thisInput).siblings(".error-message").text("");
+                                $(thisInput).removeClass("invalidText").addClass("correct");
+                                //                               
+                                setTimeout(() => {
+                                    $(thisInput).removeClass("correct");
+                                }, 3700);
+                            } else {
+                                $(thisInput).removeClass("correct").addClass("invalidText");
+                                $(thisInput).siblings(".error-message").text("Fecha no valida");
+                                setTimeout(() => {
+                                    //                                     $(thisInput).removeClass("invalidText");
+
+                                }, 3700);
+                            }
 
                         }
 
                         function validarCurp(thisInput) {
-                        const regExp = /[A-Z]{1}[AEIOU]{1}[A-Z]{2}[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])[HM]{1}(AS|BC|BS|CC|CS|CH|CL|CM|DF|DG|GT|GR|HG|JC|MC|MN|MS|NT|NL|OC|PL|QT|QR|SP|SL|SR|TC|TS|TL|VZ|YN|ZS|NE)[B-DF-HJ-NP-TV-Z]{3}[0-9A-Z]{1}[0-9]{1}/;
-                        const texto = $(thisInput).val();
-                        if (regExp.test(texto)) {
-                        $(thisInput).removeClass("invalidText").addClass("correct");
-                        //                                $(thisInput).siblings(".error-message").text("Correcto");
-                        setTimeout(() => {
-                        $(thisInput).removeClass("correct");
-                        }, 3700);
-                        } else {
-                        $(thisInput).removeClass("correct").addClass("invalidText");
-                        $(thisInput).siblings(".error-message").text("CURP no valida");
-                        setTimeout(() => {
-                        //                                     $(thisInput).removeClass("invalidText");
-                        $(thisInput).siblings(".error-message").text("");
-                        }, 3700);
-                        }
+                            const regExp = /[A-Z]{1}[AEIOU]{1}[A-Z]{2}[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])[HM]{1}(AS|BC|BS|CC|CS|CH|CL|CM|DF|DG|GT|GR|HG|JC|MC|MN|MS|NT|NL|OC|PL|QT|QR|SP|SL|SR|TC|TS|TL|VZ|YN|ZS|NE)[B-DF-HJ-NP-TV-Z]{3}[0-9A-Z]{1}[0-9]{1}/;
+                            const texto = $(thisInput).val();
+                            if (regExp.test(texto)) {
+                                
+                                $(thisInput).removeClass("invalidText").addClass("correct");
+                                                                $(thisInput).siblings(".error-message").text("Correcto");
+                                setTimeout(() => {
+                                    $(thisInput).removeClass("correct");
+                                   
+                                }, 3700);
+                            } else {
+                                $(thisInput).removeClass("correct").addClass("invalidText");
+                                $(thisInput).siblings(".error-message").text("CURP no valida");
+//                                setTimeout(() => {
+//                                    //                                     $(thisInput).removeClass("invalidText");
+//                                    $(thisInput).siblings(".error-message").text("");
+//                                }, 3700);
+                            }
 
                         }
 
                         function validarRol(thisInput) {
-                        const valor = $(thisInput).val();
-                        if (valor != 0) {
-                        $(thisInput).removeClass("invalidText").addClass("correct");
-                        setTimeout(() => {
-                        $(thisInput).removeClass("correct");
-                        }, 3700);
-                        } else {
-                        $(thisInput).removeClass("correct").addClass("invalidText");
-                        $(thisInput).siblings(".error-message").text("rol no valido");
-                        setTimeout(() => {
-                        //                                     $(thisInput).removeClass("invalidText");
-                        $(thisInput).siblings(".error-message").text("");
-                        }, 3700);
-                        }
+                            const valor = $(thisInput).val();
+                            if (valor != 0) {
+                                $(thisInput).removeClass("invalidText").addClass("correct");
+                                setTimeout(() => {
+                                    $(thisInput).removeClass("correct");
+                                }, 3700);
+                            } else {
+                                $(thisInput).removeClass("correct").addClass("invalidText");
+                                $(thisInput).siblings(".error-message").text("rol no valido");
+                                setTimeout(() => {
+                                    //                                     $(thisInput).removeClass("invalidText");
+                                    $(thisInput).siblings(".error-message").text("");
+                                }, 3700);
+                            }
                         }
 
-                        function validarCalle(event, thisInput) {
-                        const regExp = "/[a-zA-ZÁÉÍÓÚáéíóú0-9 ]+/";
-                        const letra = event.key;
-                        if (regExp.test(letra)) {
-                        $(thisInput).removeClass("invalidText").addClass("correct");
-                        //                                $(thisInput).siblings(".error-message").text("Correcto");
-                        setTimeout(() => {
-                        $(thisInput).removeClass("correct");
-                        }, 3700);
-                        } else {
-                        $(thisInput).removeClass("correct").addClass("invalidText");
-                        $(thisInput).siblings(".error-message").text("Numero no valido");
-                        setTimeout(() => {
-                        //                                     $(thisInput).removeClass("invalidText");
-                        $(thisInput).siblings(".error-message").text("");
-                        }, 3700);
-                        event.preventDefault();
-                        }
+                        function validarCalle(thisInput) {
+                            const regExp = "/^(?!.*\.\.)(?!*\.$)[^\W][\w.]{0,29}$ /";
+                            let cadena = $(thisInput).val();
+                            if (regExp.test(cadena)) {
+                                console.log("Calle valida");
+                                $(thisInput).removeClass("invalidText").addClass("correct");
+                                $("#calleMensaje").text("");
+                                setTimeout(() => {
+                                    $(thisInput).removeClass("correct");
+                                }, 5000);
+                            } else {
+                                $(thisInput).addClass("invalidText");
+                                $("#calleMensaje").text("Calle no valida");
+                                console.log("Correo no valido");
+//                        setTimeout(() => {
+//
+//                        $("#emailMessage").text("");
+////                        $(thisInput).removeClass("invalidText");
+//                        }, 5000);
+                            }
                         }
 
                         $(document).ready(function () {
-                        $("#ddlPais").change(function () {
+                            $("#ddlPais").change(function () {
 
-                        if ($("#ddlPais").val() == 0) {
-                        $("#ddlEstado").empty();
-                        $("#ddlEstado").append(" <option>Selecciona un Estado</option>");
-                        } else {
+                                if ($("#ddlPais").val() == 0) {
+                                    $("#ddlEstado").empty();
+                                    $("#ddlEstado").append(" <option>Selecciona un Estado</option>");
+                                } else {
 
-                        //ajax para manejra peticiones asincronas
-                        $.ajax({
-                            url: "http://localhost:8081/api/estado/pais/" + $("#ddlPais").val(), //url de la peticion
-                            method: "GET", //tipo de accion
-                            dataType: 'json', // tipos de datos
-                            //Cuando la peticion fue exitosa:
-                            success: function (data, textStatus, jqXHR) {
-                                if (data.Correct) {
-                                //vacia el ddl para que no se dupliquen al ejecutar varias veces la acción
-                                $("#ddlEstado").empty();
-                                $("#ddlEstado").append(" <option value=0>Selecciona un Estado</option>");
-                                //itera sobre la lista de objetos y ejecuta la funcion de al lado
-                                $.each(data.Object, function (i, estado) {
-                                //En el input con el id: ddlEstado agrega una option con valores traidos de la petición
-                                $("#ddlEstado").append("<option value=" + estado.idEstado + ">" + estado.nombre + "</option>");
-                                });
+                                    //ajax para manejra peticiones asincronas
+                                    $.ajax({
+                                        url: "http://localhost:8081/api/estado/pais/" + $("#ddlPais").val(), //url de la peticion
+                                        method: "GET", //tipo de accion
+                                        dataType: 'json', // tipos de datos
+                                        //Cuando la peticion fue exitosa:
+                                        success: function (data, textStatus, jqXHR) {
+                                            if (data.Correct) {
+                                                //vacia el ddl para que no se dupliquen al ejecutar varias veces la acción
+                                                $("#ddlEstado").empty();
+                                                $("#ddlEstado").append(" <option value=0>Selecciona un Estado</option>");
+                                                //itera sobre la lista de objetos y ejecuta la funcion de al lado
+                                                $.each(data.Object, function (i, estado) {
+                                                    //En el input con el id: ddlEstado agrega una option con valores traidos de la petición
+                                                    $("#ddlEstado").append("<option value=" + estado.idEstado + ">" + estado.nombre + "</option>");
+                                                });
+                                            }
+                                        },
+                                        //Cuando hubo error en la petición 
+                                        error: function (jqXHR, textStatus, errorThrown) {
+                                            alert(textStatus);
+                                        }
+
+
+
+
+
+                                    });
                                 }
-                                },
-                                //Cuando hubo error en la petición 
-                            error: function (jqXHR, textStatus, errorThrown) {
-                                alert(textStatus);
-                                }
 
 
 
 
-
-                        });
-                        }
-
-
-
-
-                        });
+                            });
                         });
                         $(document).ready(function () {
-                          $("#estatus").val(1);
-                        $("#ddlEstado").change(function () {
-                            var valEstado =$("#ddlEstado").val();
-                        if ($("#ddlEstado").val() == 0) {
-                        $("#ddlMunicipio").empty();
-                        $("#ddlMunicipio").append(" <option value=0>Selecciona un Municipio</option>");
-                        } else {
-                        $.ajax({
-                        url: "http://localhost:8081/api/municipio/estado/" + $("#ddlEstado").val(),
-                                method: "GET", //tipo de accion
-                                dataType: 'json', // tipos de datos
-                                success: function (data, textStatus, jqXHR) {
+                            $("#estatus").val(1);
+                            $("#ddlEstado").change(function () {
+                                var valEstado = $("#ddlEstado").val();
+                                if ($("#ddlEstado").val() == 0) {
+                                    $("#ddlMunicipio").empty();
+                                    $("#ddlMunicipio").append(" <option value=0>Selecciona un Municipio</option>");
+                                } else {
+                                    $.ajax({
+                                        url: "http://localhost:8081/api/municipio/estado/" + $("#ddlEstado").val(),
+                                        method: "GET", //tipo de accion
+                                        dataType: 'json', // tipos de datos
+                                        success: function (data, textStatus, jqXHR) {
 
-                                if (data.Correct) {
-                                $("#ddlMunicipio").empty();
-                                $("#ddlMunicipio").append(" <option value=0>Selecciona un Municipio</option>");
-                                $.each(data.Object, function (i, municipio) {
-                                //                                                En el input con el id: ddlEstado agrega una option con valores traidos de la petición
-                                $("#ddlMunicipio").append("<option value=" + municipio.idMunicipio + ">" + municipio.nombre + "</option>");
-                                });
-                                }
+                                            if (data.Correct) {
+                                                $("#ddlMunicipio").empty();
+                                                $("#ddlMunicipio").append(" <option value=0>Selecciona un Municipio</option>");
+                                                $.each(data.Object, function (i, municipio) {
+                                                    //                                                En el input con el id: ddlEstado agrega una option con valores traidos de la petición
+                                                    $("#ddlMunicipio").append("<option value=" + municipio.idMunicipio + ">" + municipio.nombre + "</option>");
+                                                });
+                                            }
 
-                                },
-                                error: function () {
-                                alert("Hubo un error...");
+                                        },
+                                        error: function () {
+                                            alert("Hubo un error...");
+                                        }
+                                    });
                                 }
-                        });
-                        }
-                        });
+                            });
                         });
                         $(document).ready(function () {
-                        $("#ddlMunicipio").change(function () {
+                            $("#ddlMunicipio").change(function () {
 
-                        if ($("#ddlMunicipio").val() == 0) {
-                        $("#ddlColonia").empty();
-                        $("#ddlColonia").append(" <option value=0>Selecciona la Colonia</option>");
-                        } else {
-                        //                                
-                        $.ajax({
-                        url: "http://localhost:8081/api/colonia/municipio/" + $("#ddlMunicipio").val(),
-                                method: "GET",
-                                dataType: 'json',
-                                success: function (data, textStatus, jqXHR) {
-                                if (data.Correct) {
-                                $("#ddlColonia").empty();
-                                $("#ddlColonia").append(" <option value=0>Selecciona la Colonia</option>");
-                                $.each(data.Object, function (i, colonia) {
-                                $("#ddlColonia").append("<option value=" + colonia.idColonia + ">" + colonia.nombre + "</option>");
-                                });
-                                //                                             
+                                if ($("#ddlMunicipio").val() == 0) {
+                                    $("#ddlColonia").empty();
+                                    $("#ddlColonia").append(" <option value=0>Selecciona la Colonia</option>");
+                                } else {
+                                    //                                
+                                    $.ajax({
+                                        url: "http://localhost:8081/api/colonia/municipio/" + $("#ddlMunicipio").val(),
+                                        method: "GET",
+                                        dataType: 'json',
+                                        success: function (data, textStatus, jqXHR) {
+                                            if (data.Correct) {
+                                                $("#ddlColonia").empty();
+                                                $("#ddlColonia").append(" <option value=0>Selecciona la Colonia</option>");
+                                                $.each(data.Object, function (i, colonia) {
+                                                    $("#ddlColonia").append("<option value=" + colonia.idColonia + ">" + colonia.nombre + "</option>");
+                                                });
+                                                //                                             
+                                            }
+                                            ;
+                                            //                                         if (data.Correct) {
+                                            //                                            $("#ddlMunicipio").empty();
+                                            //                                            $("#ddlMunicipio").append(" <option value=0>Selecciona un Municipio</option>");
+                                            //                                            $.each(data.Objects, function (i, municipio) {
+                                            ////                                                En el input con el id: ddlEstado agrega una option con valores traidos de la petición
+                                            //                                                $("#ddlMunicipio").append("<option value=" + municipio.idMunicipio + ">" + municipio.nombre + "</option>");
+                                            //                                            });
+                                            //                                        }
+                                        },
+                                        error: function () {
+                                            alert("Algo salió mal...");
+                                        }
+                                    });
                                 }
-                                ;
-                                //                                         if (data.Correct) {
-                                //                                            $("#ddlMunicipio").empty();
-                                //                                            $("#ddlMunicipio").append(" <option value=0>Selecciona un Municipio</option>");
-                                //                                            $.each(data.Objects, function (i, municipio) {
-                                ////                                                En el input con el id: ddlEstado agrega una option con valores traidos de la petición
-                                //                                                $("#ddlMunicipio").append("<option value=" + municipio.idMunicipio + ">" + municipio.nombre + "</option>");
-                                //                                            });
-                                //                                        }
-                                },
-                                error: function () {
-                                alert("Algo salió mal...");
-                                }
-                        });
-                        }
-                        });
+                            });
                         });
         </script>
 
-        
+
 
 
 

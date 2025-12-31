@@ -50,7 +50,7 @@
         </style>
 
     </head>
-    
+
     <body class="container p-3">
         <br>
         <h1 class="container text-center">Carga Masiva </h1>
@@ -87,41 +87,38 @@
 
 
                     <!--BOTON PARA ENVIAR EL FORMULARIO-->
-<!--                    <div class="container mb-3">      
-                       
-
-                    </div>-->
+                    <!--                    <div class="container mb-3">      
+                                           
+                    
+                                        </div>-->
                 </div>
             </form>
-
+            <!--hash-->
+            <input type="hidden" th:value="${hash}">
         </section>
 
+
         <!--SECCION QUE CONTIENE LA TABLA DE ERRORES-->
-        <div th:if="${Errores != null}">
+        <div th:if="${validado == true}">
 
-            <div th:if="${Errores != null and Errores.size() !=0}" class="container">
-                <h4 >Archivo incorrecto: </h4>
-                <table class="table table-responsive table-bordered">
-                    <thead class="table-dark">
-                    <th class="col-2">Linea</th>
-                    <th>Texto</th>
-                    <th>Error</th>
-                    </thead>
-                    <tbody>
-                        <tr th:each="error :${Errores}">
-                            <td th:text="${error.linea}"></td> 
-                            <td th:text="${error.campo}"></td> 
-                            <td th:text="${error.descripcion}"></td> 
-                        </tr>
-                    </tbody>
-                </table>
-
+            <div th:if="${Errores != null and !#lists.isEmpty(Errores)}">
+                <h4 class="text-danger">Errores encontrados:</h4>
             </div>
 
-            <div th:if="${Errores == null or Errores.size() == 0}">
-                <h4>Archivo correcto: </h4>
-                <a th:href="@{/Usuario/CargaMasiva/Procesar}" class="btn btn-success">Procesar archivo</a>
+            <div th:if="${Errores == null or #lists.isEmpty(Errores)}">
+                <div class="alert alert-success">
+                    <h4>¡Archivo validado con éxito!</h4>
+                    <a th:href="@{/Usuario/CargaMasiva/Procesar}" class="btn btn-success">Procesar archivo</a>
+                </div>
             </div>
+
+        </div>
+
+        <div style="background: #eee; padding: 10px; border: 1px solid #ccc;">
+            <h5>Debug de variables:</h5>
+            <p>¿Validado existe?: <b th:text="${validado}"></b></p>
+            <p>¿Errores es nulo?: <b th:text="${Errores == null}"></b></p>
+            <p>¿Errores está vacío?: <b th:if="${Errores != null}" th:text="${#lists.isEmpty(Errores)}"></b></p>
         </div>
 
 
@@ -139,12 +136,12 @@
                         $("#btn-submit").addClass("btn-submit-txt");
                         $("#input-file").removeAttr("accept", ".xlsx");
                         $("#input-file").attr("accept", ".txt");
-                        $("#btns-archivo-submit").css({"display":"block"});
+                        $("#btns-archivo-submit").css({"display": "block"});
                     }
                     function cambiarBotonExcel() {
                         $("#btn-submit").removeClass("btn-submit-txt");
                         $("#btn-submit").addClass("btn-submit-excel");
-                        $("#btns-archivo-submit").css({"display":"block"});
+                        $("#btns-archivo-submit").css({"display": "block"});
 
                         $("#input-file").removeAttr("accept", ".txt");
                         $("#input-file").attr("accept", ".xlsx");

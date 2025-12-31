@@ -86,9 +86,13 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                 <!--<a href="url" class="btn btn-warning col-12" th:href="@{/Usuario/formularioEditable?idUsuario=}+${Usuario.idUsuario}">Editar</a>-->
                 
                 <button class="btn btn-warning w-100 mb-3"  onclick="cargarRol()"  data-bs-toggle="modal" data-bs-target="#my-modal" >Editar</button>
+                
+                
                 <button class="btn btn-outline-secondary mb-3 col-12" id="btnFoto">Cambiar Foto</button>
-                <form enctype="multipart/form-data" method="POST" th:action="@{add}">
-                    <input type="file" hidden id="inputImg" class="mb-3"accept="image/*">
+                <form enctype="multipart/form-data" th:Object="${Usuario}"  method="POST" th:action="@{/Usuario/ImagenPerfil}">
+                    <input type="file" hidden id="inputImg" name="imagenInput" class="mb-3"accept="image/*">
+                    <input type="hidden" th:field="${Usuario.idUsuario}">
+                    <button type="submit" id="btnSubImg"></button>
                 </form>
             </div>
 
@@ -459,7 +463,8 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                                         });
                                         
                                          $("#inputImg").on("change",()=>{
-                                              $("#inputImg").submit();
+                                              $("#btnSubImg").click();
+                                              
                                          })
         </script>
         <script>
