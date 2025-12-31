@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
@@ -382,6 +383,7 @@ public class UsuarioController {
             });
             
             Result result = response.getBody();
+            result.Object = new ArrayList<>();
              if (!result.Objects.isEmpty()) {
 //            model.addAttribute("Errores", errores);//Mandando errores
             model.addAttribute("isError", true);
@@ -392,9 +394,10 @@ public class UsuarioController {
         }
              
              
-            model.addAttribute("hash",result.Objects.get(0));
+            model.addAttribute("token",result.Objects.get(0));
+            
             model.addAttribute("Errores", result.Object);
-            model.addAttribute("validado", true);
+//            model.addAttribute("validado", true);
             
             
             
@@ -579,43 +582,18 @@ public class UsuarioController {
 //        return erroresCarga;
 //    }
 //                                                                                                                              //CAMBIAR A SERVIDOR
-//    @GetMapping("/CargaMasiva/Procesar")
-//    public String ProcesarArchivo(HttpSession sesion, Model model) {
-//        //Obteniendo ruta del archivo que se registró en metodo CargaMasiva()
-//        String ruta = sesion.getAttribute("archivoCargaMasiva").toString();
-//        String extensionArchivo = new File(ruta).getName().split("\\.")[1];
-////        Result result;
-//
-//        if (extensionArchivo.equals("txt")) {
-//            List<Usuario> usuarios = LeerArchivo(new File(ruta));
-////            usuarioDaoImplementation.AddMany(usuarios);
-//            ModelMapper modelMapper = new ModelMapper();
-//            List<vPerez.ProgramacionNCapasNov2025.JPA.Usuario> usuariosJPA = new ArrayList<>();
-//            for (Usuario usuario : usuarios) {
-//                vPerez.ProgramacionNCapasNov2025.JPA.Usuario usuarioJPA = modelMapper.map(usuario, vPerez.ProgramacionNCapasNov2025.JPA.Usuario.class);
-//                usuariosJPA.add(usuarioJPA);
-//            }
-////            usuarioDaoImplementation.AddMany(usuarios);
-//            Result resultCargaMasiva = usuarioJpaDAOImplementation.addMany(usuariosJPA);
-//
-//        } else {
-//            //Guardando usuarios de la lista de usuarios creada con el metodo leer archivo
-//            List<Usuario> usuarios = LeerArchivoExcel(new File(ruta));
-//            ModelMapper modelMapper = new ModelMapper();
-//            List<vPerez.ProgramacionNCapasNov2025.JPA.Usuario> usuariosJPA = new ArrayList<>();
-//            for (Usuario usuario : usuarios) {
-//                vPerez.ProgramacionNCapasNov2025.JPA.Usuario usuarioJPA = modelMapper.map(usuario, vPerez.ProgramacionNCapasNov2025.JPA.Usuario.class);
-//                usuariosJPA.add(usuarioJPA);
-//            }
-////            usuarioDaoImplementation.AddMany(usuarios);
-//            usuarioJpaDAOImplementation.addMany(usuariosJPA);
-//
-//        }
-//        sesion.removeAttribute("archivoCargaMasiva");
-////        new File(ruta).delete();//Ya cuando se terminaron las operaciones con el archivo, se elimina de la carpeta
-//
-//        return "redirect:/Usuario";
-//    }
+    @GetMapping("/CargaMasiva/Procesar")
+    public String ProcesarArchivo(@RequestParam("token") String token) {
+        RestTemplate restTemplate = new RestTemplate();
+        String urlProcesar = url+"/usuarios/CargaMasiva/Procesar/"+token;
+        ResponseEntity<Result> response = restTemplate.exchange(urlProcesar, 
+                HttpMethod.GET, 
+                HttpEntity.EMPTY, 
+                new ParameterizedTypeReference<Result>() {
+                });
+        response.getBody();
+        return "redirect:/Usuario";
+    }
 
     @PostMapping("/Search")
     public String buscarUsuarios(@ModelAttribute("Usuario") Usuario usuario, Model model) {
