@@ -120,7 +120,7 @@
             
             <div th:if="${Errores == null or Errores.size() == 0}">
                 <h4>Archivo correcto: </h4>
-                <form method="GET" action="/Usuario/CargaMasiva/Procesar" >
+                <form method="POST" action="/Usuario/CargaMasiva/Procesar" >
                     <button type="submit">Procesar</button>
                     <!--hash-->
                     <input type="hidden" name="token" th:value="${token}">

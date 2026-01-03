@@ -1,5 +1,7 @@
 package vPerez.ProgramacionNCapasNov2025.Controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpSession;
 import java.io.BufferedReader;
 import java.io.File;
@@ -33,6 +35,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -374,224 +377,63 @@ public class UsuarioController {
             MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();//Para agrupar las partes del cuerpo de la petición
             // El archivo debe enviarse como un recurso
             body.add("archivo", archivo.getResource());//usamos getResource para que spring maneje correctamente el envio del archivo
-            
-            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity(body,headers);
+
+            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity(body, headers);
             ResponseEntity<Result> response = restTemplate.exchange(url + "/usuarios/CargaMasiva?archivo",
                     HttpMethod.POST,
                     requestEntity,
                     new ParameterizedTypeReference<Result>() {
             });
-            
+
             Result result = response.getBody();
             result.Object = new ArrayList<>();
-             if (!result.Objects.isEmpty()) {
+            if (!result.Objects.isEmpty()) {
 //            model.addAttribute("Errores", errores);//Mandando errores
-            model.addAttribute("isError", true);
+                model.addAttribute("isError", true);
 //
-        } else {
-            model.addAttribute("isError", false);
+            } else {
+                model.addAttribute("isError", false);
 //            sesion.setAttribute("archivoCargaMasiva", rutaAbsoluta);//Añadiendo atributos a la ruta
-        }
-             
-             
-            model.addAttribute("token",result.Objects.get(0));
-            
+            }
+
+            model.addAttribute("token", result.Objects.get(0));
+
             model.addAttribute("Errores", result.Object);
 //            model.addAttribute("validado", true);
-            
-            
-            
+
         } catch (Exception e) {
             System.out.println(e.getLocalizedMessage());
         }
 //        Result result = response.getBody();
         return "CargaMasiva";
     }
-//    @PostMapping("/CargaMasiva")
-//    public String CargaMasiva(@ModelAttribute MultipartFile archivo, Model model, HttpSession sesion) throws IOException {
-//
-//        //CARGA DE ARCHIVOS
-//        //divide el nombre del archivo en 2 partes, una es el nombre y la otra es despues del punto(extension) 
-//        //Para revisar que sea la extensión solicitada
-//        String extension = archivo.getOriginalFilename().split("\\.")[1];
-//
-//        //Obteniendo la ruta base la que viene del disco del sistema
-//        String ruta = System.getProperty("user.dir");
-//
-//        // Ruta desde el proyecto
-//        String rutaArchivo = "src\\main\\resources\\archivos";
-//
-//        //Obteniendo la fecha para que sirva de id
-//        String fecha = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
-//
-//        //Esta es la ruta absoluta del archivo(donde se va a guardar en el proyecto)
-//        String rutaAbsoluta = ruta + "/" + rutaArchivo + "/" + fecha + archivo.getOriginalFilename();
-//
-//        archivo.transferTo(new File(rutaAbsoluta));
-////        Files.copy(archivo.getInputStream(), Paths.get(rutaAbsoluta));
-//        List<Usuario> usuarios = new ArrayList<>();
-//
-//        //¿Cual archivo debe leer?
-//        if (extension.equals("txt")) {
-//            usuarios = LeerArchivo(new File(rutaAbsoluta));//cambiar a servidor
-//        } else {
-//            usuarios = LeerArchivoExcel(new File(rutaAbsoluta));//cambiar a servidor
-//        }
-//
-//        //validacion de archivo                                                    //CAMBIAR A SERVIDOR
-//        List<ErrorCarga> errores = validarDatos(usuarios);
-//        model.addAttribute("Errores", errores);
-//        if (!errores.isEmpty()) {
-//            model.addAttribute("Errores", errores);//Mandando errores
-//            model.addAttribute("isError", true);
-//
-//        } else {
-//            model.addAttribute("isError", false);
-//            sesion.setAttribute("archivoCargaMasiva", rutaAbsoluta);//Añadiendo atributos a la ruta
-//        }
-//
-//        return "CargaMasiva";
-//    }
-//                                                                                                                              //CAMBIAR A SERVIDOR
-//    public List<Usuario> LeerArchivo(File archivo) {//
-//        List<Usuario> usuarios = new ArrayList<>();
-//        try (
-//                //                InputStream inputStream = archivo.getInputStream(); //inpuStream lee los bytes de un archivo, en este caso el archivo que le estamos indicando
-//                //Lee texto desde un archivo de entrada(nuestro input stream):
-//                //                 BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
-//
-//                BufferedReader bufferedReader = new BufferedReader(new FileReader(archivo))) {
-//
-//            bufferedReader.readLine(); //solo lee el encabezado que añadimos al txt
-//            String linea;
-//            while ((linea = bufferedReader.readLine()) != null) {
-//                //datos representa cada columna(campo)
-//                String[] datos = linea.split("\\|");
-//
-//                Usuario usuario = new Usuario();
-//
-//                usuario.setNombre(datos[0].trim());
-//                usuario.setApellidoPaterno(datos[1].trim());
-//                usuario.setApellidoMaterno(datos[2].trim());
-//                usuario.setEmail(datos[3].trim());
-//                usuario.setPassword(datos[4].trim());
-////                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-//                SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
-//                usuario.setFechaNacimiento(formato.parse(datos[5]));
-//                usuario.rol = new Rol();
-//                usuario.rol.setIdRol(Integer.valueOf(datos[6].trim())); // le quité lso espacios para que fuese un formato que pueda transformar
-//                usuario.setSexo(datos[7].trim());
-//                usuario.setTelefono(datos[8].trim());
-//                usuario.setCelular(datos[9].trim());
-//                usuario.setCurp(datos[10].trim());
-//                usuario.direcciones = new ArrayList<>();
-//                usuario.direcciones.add(new Direccion());
-//                usuario.direcciones.get(0).setCalle(datos[11].toString().trim());
-//                usuario.direcciones.get(0).setNumeroInterior(datos[12].toString().trim());
-//                usuario.direcciones.get(0).setNumeroExterior(datos[13].toString().trim());
-//                usuario.direcciones.get(0).colonia = new Colonia();
-//                usuario.direcciones.get(0).colonia.setIdColonia(Integer.valueOf(datos[14].trim()));
-//
-//                usuarios.add(usuario);
-//
-//                System.out.println("leyendo datos: " + linea);
-//            }
-//
-//        } catch (Exception ex) {
-//            System.out.println(ex.getLocalizedMessage());
-//        }
-//        return usuarios;
-//    }
-//                                                                                                                              //CAMBIAR A SERVIDOR
-//    public List<Usuario> LeerArchivoExcel(File archivo) {
-//        List<Usuario> usuarios = new ArrayList<>();
-////Cambió de archivo.getInputStream() a archivo
-//        try (XSSFWorkbook workbook = new XSSFWorkbook(archivo)) {
-//            XSSFSheet sheet = workbook.getSheetAt(0);
-//            for (Row row : sheet) {
-////                if (row.getRowNum() == 0) {
-////                    System.out.println("Encabezados");
-////                } else {
-//
-//                    Usuario usuario = new Usuario();
-//                    usuario.setNombre(row.getCell(0).toString());
-//                    usuario.setApellidoPaterno(row.getCell(1).toString());
-//                    usuario.setApellidoMaterno(row.getCell(2).toString());
-//                    usuario.setEmail(row.getCell(3).toString());
-//                    usuario.setPassword(row.getCell(4).toString());
-//                    SimpleDateFormat formatoFecha = new SimpleDateFormat("dd/MM/yyyy");
-//                    usuario.setFechaNacimiento(formatoFecha.parse(row.getCell(5).toString()));
-//                    usuario.rol = new Rol();
-//                    int IdRol = Integer.parseInt(row.getCell(6).toString());
-//                    usuario.rol.setIdRol(IdRol);
-//                    //  usuario.rol.setIdRol((Float.valueOf(row.getCell(6).toString().trim())).intValue());
-//                    usuario.setSexo(row.getCell(7).toString());  //datos nulos
-//                    usuario.setTelefono(row.getCell(8).toString());//
-//                    usuario.setCelular(row.getCell(9).toString());
-//                    usuario.setCurp(row.getCell(10).toString());
-//                    usuario.direcciones = new ArrayList<>();
-//                    usuario.direcciones.add(new Direccion());
-//                    usuario.direcciones.get(0).setCalle(row.getCell(11).toString());
-//                    usuario.direcciones.get(0).setNumeroInterior(row.getCell(12).toString());
-//                    usuario.direcciones.get(0).setNumeroExterior(row.getCell(13).toString());
-//                    usuario.direcciones.get(0).colonia = new Colonia();
-//                    usuario.direcciones.get(0).colonia.setIdColonia(Integer.parseInt(row.getCell(14).toString()));
-//                    usuarios.add(usuario);
-////                }
-//
-//            }
-//
-//        } catch (Exception ex) {
-//            System.out.println(ex.getCause() + " :" + ex.getLocalizedMessage());
-//        }
-//        return usuarios;
-//    }
-//                                                                                                                                //CAMBIAR A SERVIDOR
-//    //Lista de errores (contendrá todos los atributos de la clase)
-//    public List<ErrorCarga> validarDatos(List<Usuario> usuarios) {
-//        List<ErrorCarga> erroresCarga = new ArrayList<>();//Se almacenarán todos los errores
-//        int lineaError = 0;
-//
-//        //Iterando sobre la lista que le pasamos al metodo como argumento
-//        for (Usuario usuario : usuarios) {
-//            List<ObjectError> errors = new ArrayList();
-//            lineaError++;
-//            BindingResult bindingResultUsuario = ValidationService.validateObjects(usuario);//validando cada usuario
-//            if (bindingResultUsuario.hasErrors()) {
-//                errors.addAll(bindingResultUsuario.getAllErrors());
-//            }
-//            if (usuario.direcciones.get(0) != null) {
-//                BindingResult bindingDireccion = ValidationService.validateObjects(usuario.direcciones.get(0));
-//                if (bindingDireccion.hasErrors()) {
-//                    errors.addAll(bindingDireccion.getAllErrors());
-//                }
-//            }
-////            List<ObjectError> errores = bindingResult.getAllErrors(); //Obteniendo los errores y guardandolos
-//
-//            for (ObjectError error : errors) {
-//                FieldError fieldError = (FieldError) error;//obteniendo cada error especifico en cada campo(field)
-//                ErrorCarga errorCarga = new ErrorCarga();//Instancia de DTO ErrorCarga
-//                errorCarga.linea = lineaError;
-//                errorCarga.campo = fieldError.getField();//obtiendo el campo del error
-//                errorCarga.descripcion = fieldError.getDefaultMessage();//guardando mensaje de error
-//                erroresCarga.add(errorCarga); //Guardando cada error en la lista de errores
-//            }
-//        }
-//
-////        model.addAttribute("Errores",erroresCarga);
-//        return erroresCarga;
-//    }
-//                                                                                                                              //CAMBIAR A SERVIDOR
-    @GetMapping("/CargaMasiva/Procesar")
-    public String ProcesarArchivo(@RequestParam("token") String token) {
+
+    @PostMapping("/CargaMasiva/Procesar")
+    public String ProcesarArchivo(@RequestParam("token") String token, Model model, RedirectAttributes redirectAttributes) throws JsonProcessingException {
         RestTemplate restTemplate = new RestTemplate();
-        String urlProcesar = url+"/usuarios/CargaMasiva/Procesar/"+token;
-        ResponseEntity<Result> response = restTemplate.exchange(urlProcesar, 
-                HttpMethod.GET, 
-                HttpEntity.EMPTY, 
-                new ParameterizedTypeReference<Result>() {
-                });
-        response.getBody();
+        String urlProcesar = url + "/usuarios/CargaMasiva/Procesar/" + token;
+        try {
+            ResponseEntity<Result> response = restTemplate.exchange(urlProcesar,
+                    HttpMethod.POST,
+                    HttpEntity.EMPTY,
+                    new ParameterizedTypeReference<Result>() {
+            });
+            Result result = response.getBody();
+            model.addAttribute("respuestaCarga", result.Object);
+            
+                redirectAttributes.addFlashAttribute("mensaje", result.Object);
+
+            
+
+        } catch (HttpClientErrorException httpEx) {
+            ObjectMapper mapper = new ObjectMapper();
+            Result resultError = mapper.readValue(httpEx.getResponseBodyAsString(), Result.class);
+            redirectAttributes.addFlashAttribute("mensaje", resultError.Object);
+            return "redirect:/Usuario/CargaMasiva";
+        }catch (Exception ex) {
+            System.out.println(ex.getCause());
+            System.out.println(ex.getLocalizedMessage());
+        } 
         return "redirect:/Usuario";
     }
 
