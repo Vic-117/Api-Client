@@ -185,9 +185,9 @@ public class UsuarioController {
 //            } else {
 //                resultUpdateUsuario.Object = "Error al actualizar";
 //            }
-//            redirectAttributes.addFlashAttribute("resultadoUpdate", resultUpdateUsuario);
+            redirectAttributes.addFlashAttribute("resultadoUpdate", result);
 //            return "detalleUsuario";
-            return "redirect:/Usuario/detail/" + usuario.getIdUsuario();
+            return "redirect/Usuario/detail/" + usuario.getIdUsuario();
 
         } else if ((usuario.getIdUsuario() > 0 && usuario.direcciones.get(0).getIdDireccion() > 0)) { // editar direccion
             RestTemplate restTemplate = new RestTemplate();
