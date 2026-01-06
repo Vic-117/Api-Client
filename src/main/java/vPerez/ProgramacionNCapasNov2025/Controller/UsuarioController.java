@@ -38,6 +38,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import vPerez.ProgramacionNCapasNov2025.ML.Colonia;
 import vPerez.ProgramacionNCapasNov2025.ML.Direccion;
@@ -137,31 +138,11 @@ public class UsuarioController {
             Result resultUsuario = new Result();
             resultUsuario.Correct = response.getBody();
 
-//             ResponseEntity<Result<List<Rol>>> responseRol = restTemplate.exchange(url+"rol", HttpMethod.GET, HttpEntity.EMPTY, new ParameterizedTypeReference<Result<List<Rol>>>(){});
-//
-//             Result resultRol= responseRol.getBody();
-//
-//
-//                model.addAttribute("Roles", resultRol.Objects);
+
             model.addAttribute("Usuario", usuario);
-//                if (result.Correct) {
-//                    redirectAttributes.addFlashAttribute("ErroresC", result.Correct);
-//                } else {
-//                    redirectAttributes.addFlashAttribute("ErroresC", result.Correct);
-//                }
+
             return "redirect:/Usuario";
 
-            //AGREGADO RECIENTEMENTE SOLO EL IF
-//                ModelMapper modelMapper = new ModelMapper();
-//
-//                vPerez.ProgramacionNCapasNov2025.JPA.Usuario usuarioJpa = modelMapper.map(usuario, vPerez.ProgramacionNCapasNov2025.JPA.Usuario.class);
-//
-//                Result result = usuarioJpaDAOImplementation.add(usuarioJpa);
-//                if (!result.Correct) {
-//                    model.addAttribute("ErroresC", "Sucedio un error.");
-//                    return "UsuarioDireccionForm";
-//                }
-//                redirectAttributes.addFlashAttribute("ResultAgregar", "El usuario se agregó con exito"); // Agregado
         } else if (usuario.getIdUsuario() > 0 && usuario.direcciones == null) { // editar usuario
 
             RestTemplate restTemplate = new RestTemplate();
@@ -173,36 +154,33 @@ public class UsuarioController {
             });
 
             Result result = response.getBody();
-//            usuario.setPassword(usuario.getPassword());
             usuario.direcciones = new ArrayList<>();
             usuario.direcciones.add(new Direccion());
 
-//            vPerez.ProgramacionNCapasNov2025.JPA.Usuario usuarioEntidad = modelMapper.map(usuario, vPerez.ProgramacionNCapasNov2025.JPA.Usuario.class);
-//
-//            Result resultUpdateUsuario = usuarioJpaDAOImplementation.update(usuarioEntidad);
-//            if (resultUpdateUsuario.Correct) {
-//                resultUpdateUsuario.Object = "Exito al actualizar";
-//            } else {
-//                resultUpdateUsuario.Object = "Error al actualizar";
-//            }
             redirectAttributes.addFlashAttribute("resultadoUpdate", result);
-//            return "detalleUsuario";
-            return "redirect/Usuario/detail/" + usuario.getIdUsuario();
+            return "redirect:/Usuario/detail/" + usuario.getIdUsuario();
 
         } else if ((usuario.getIdUsuario() > 0 && usuario.direcciones.get(0).getIdDireccion() > 0)) { // editar direccion
+            
             RestTemplate restTemplate = new RestTemplate();
 
             HttpEntity<Direccion> httpEntity = new HttpEntity<>(usuario.direcciones.get(0));
 
-            ResponseEntity<Result> response = restTemplate.exchange(url + "/direccion/" + usuario.direcciones.get(0).getIdDireccion(),
-                    HttpMethod.PUT,
-                    httpEntity,
-                    new ParameterizedTypeReference<Result>() {
-            });
-            Result result = response.getBody();
-//            Result resultUpdateDireccion = direccionJpaDAOImplementation.update(usuarioJPA.direcciones.get(0));
+
+            
+                ResponseEntity<Result> response = restTemplate.exchange(url + "/direccion/" + usuario.direcciones.get(0).getIdDireccion(),
+                        HttpMethod.PUT,
+                        httpEntity,
+                        new ParameterizedTypeReference<Result>() {
+                });
+                Result result = response.getBody();
+                redirectAttributes.addFlashAttribute("resultadoUpdateDireccion", result);
+
             return "redirect:/Usuario/detail/" + usuario.getIdUsuario();
 
+            
+            
+            
         } else if ((usuario.getIdUsuario() > 0 && usuario.direcciones.get(0).getIdDireccion() == 0)) { // agregar direccion
             RestTemplate restTemplate = new RestTemplate();
             HttpEntity<Direccion> requestEntity = new HttpEntity<>(usuario.direcciones.get(0));

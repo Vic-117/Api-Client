@@ -654,6 +654,10 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
             
             $("#btnEditarUsuario").click();
         </script>
+        <script th:if="${resultadoUpdateDireccion.Correct == false}">
+            
+            $("#btnEditarUsuario").click();
+        </script>
         <script>
 
             $("#btnSubmitDireccion").on("load", () => {
