@@ -3,6 +3,7 @@ package vPerez.ProgramacionNCapasNov2025.Controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -116,71 +117,96 @@ public class UsuarioController {
     }
 
     @PostMapping("add")
-    public String addUsuarioDireccion(@ModelAttribute("Usuario") Usuario usuario, @ModelAttribute("imagenInput") MultipartFile imagenInput,
-            Model model, RedirectAttributes redirectAttributes) throws IOException {
-        if (imagenInput != null) {
-            long tamañoImagen = imagenInput.getSize();
-            if (tamañoImagen > 0) {
-                String extension = imagenInput.getOriginalFilename().split("\\.")[1];
-                if (extension.equals("png") || extension.equals("jpg") || extension.equals("jpeg")) {
-                    usuario.setImagen(Base64.getEncoder().encodeToString(imagenInput.getBytes()));
+    public String addUsuarioDireccion(@Valid @ModelAttribute("Usuario") Usuario usuario,
+            BindingResult bindingResult, //debe de ir justo despues del objeto a validar
+            @ModelAttribute("imagenInput") MultipartFile imagenInput,
+            Model model, RedirectAttributes redirectAttributes) {
+        try {
+            if (imagenInput != null) {
+                long tamañoImagen = imagenInput.getSize();
+                if (tamañoImagen > 0) {
+                    String extension = imagenInput.getOriginalFilename().split("\\.")[1];
+                    if (extension.equals("png") || extension.equals("jpg") || extension.equals("jpeg")) {
+                        usuario.setImagen(Base64.getEncoder().encodeToString(imagenInput.getBytes()));
+                    }
                 }
             }
+        } catch (IOException ex) {
+            ex.getCause();
+            System.out.println(ex.getLocalizedMessage());
         }
+        RestTemplate restTemplateRol = new RestTemplate();
+        ResponseEntity<Result<List<Rol>>> responseRol = restTemplateRol.exchange(url + "/rol",
+                HttpMethod.GET,
+                HttpEntity.EMPTY,
+                new ParameterizedTypeReference<Result<List<Rol>>>() {
+        });
+
+        Result resultRol = responseRol.getBody();
 
         if (usuario.getIdUsuario() == 0 && usuario.direcciones.get(0).getIdDireccion() == 0) { // agregar usuario direccion
 
-            RestTemplate restTemplate = new RestTemplate();
-            HttpEntity<Usuario> requestEntity = new HttpEntity<>(usuario);
+            if (bindingResult.hasErrors()) {
 
-            ResponseEntity<Boolean> response = restTemplate.exchange(url + "/usuarios", HttpMethod.POST, requestEntity, new ParameterizedTypeReference<Boolean>() {
-            });
-            Result resultUsuario = new Result();
-            resultUsuario.Correct = response.getBody();
+                model.addAttribute("Roles", resultRol.Object);
+                model.addAttribute("Usuario", usuario);
+//                model.addAttribute("errors", bindingResult.getAllErrors());
 
+                return "UsuarioDireccionForm";
+            } else {
+                RestTemplate restTemplate = new RestTemplate();
+                HttpEntity<Usuario> requestEntity = new HttpEntity<>(usuario);
 
-            model.addAttribute("Usuario", usuario);
-
-            return "redirect:/Usuario";
+                ResponseEntity<Boolean> response = restTemplate.exchange(url + "/usuarios", HttpMethod.POST, requestEntity, new ParameterizedTypeReference<Boolean>() {
+                });
+                Result resultUsuario = new Result();
+                resultUsuario.Correct = response.getBody();
+                model.addAttribute("Usuario", usuario);
+                return "redirect:/Usuario";
+            }
 
         } else if (usuario.getIdUsuario() > 0 && usuario.direcciones == null) { // editar usuario
 
-            RestTemplate restTemplate = new RestTemplate();
-            HttpEntity<Usuario> requestEntity = new HttpEntity<>(usuario);
-            ResponseEntity<Result> response = restTemplate.exchange(url + "/usuarios/" + usuario.getIdUsuario(),
-                    HttpMethod.PUT,
-                    requestEntity,
-                    new ParameterizedTypeReference<Result>() {
-            });
+            if (bindingResult.hasErrors()) {
+                redirectAttributes.addFlashAttribute("ErroresDireccion",true);
+                redirectAttributes.addFlashAttribute("Usuario",usuario);
+                redirectAttributes.addFlashAttribute("Errores",bindingResult.getFieldError());
+                System.out.println(bindingResult.getErrorCount());
+                System.out.println(bindingResult.getFieldErrors());
+                return "redirect:/Usuario/detail/" + usuario.getIdUsuario();
+            } else {
+                RestTemplate restTemplate = new RestTemplate();
+                HttpEntity<Usuario> requestEntity = new HttpEntity<>(usuario);
+                ResponseEntity<Result> response = restTemplate.exchange(url + "/usuarios/" + usuario.getIdUsuario(),
+                        HttpMethod.PUT,
+                        requestEntity,
+                        new ParameterizedTypeReference<Result>() {
+                });
 
-            Result result = response.getBody();
-            usuario.direcciones = new ArrayList<>();
-            usuario.direcciones.add(new Direccion());
+                Result result = response.getBody();
+                usuario.direcciones = new ArrayList<>();
+                usuario.direcciones.add(new Direccion());
 
-            redirectAttributes.addFlashAttribute("resultadoUpdate", result);
-            return "redirect:/Usuario/detail/" + usuario.getIdUsuario();
+//                redirectAttributes.addFlashAttribute("resultadoUpdate", result);
+                return "redirect:/Usuario/detail/" + usuario.getIdUsuario();
+            }
 
         } else if ((usuario.getIdUsuario() > 0 && usuario.direcciones.get(0).getIdDireccion() > 0)) { // editar direccion
-            
+
             RestTemplate restTemplate = new RestTemplate();
 
             HttpEntity<Direccion> httpEntity = new HttpEntity<>(usuario.direcciones.get(0));
 
-
-            
-                ResponseEntity<Result> response = restTemplate.exchange(url + "/direccion/" + usuario.direcciones.get(0).getIdDireccion(),
-                        HttpMethod.PUT,
-                        httpEntity,
-                        new ParameterizedTypeReference<Result>() {
-                });
-                Result result = response.getBody();
-                redirectAttributes.addFlashAttribute("resultadoUpdateDireccion", result);
+            ResponseEntity<Result> response = restTemplate.exchange(url + "/direccion/" + usuario.direcciones.get(0).getIdDireccion(),
+                    HttpMethod.PUT,
+                    httpEntity,
+                    new ParameterizedTypeReference<Result>() {
+            });
+            Result result = response.getBody();
+//                redirectAttributes.addFlashAttribute("resultadoUpdateDireccion", result);
 
             return "redirect:/Usuario/detail/" + usuario.getIdUsuario();
 
-            
-            
-            
         } else if ((usuario.getIdUsuario() > 0 && usuario.direcciones.get(0).getIdDireccion() == 0)) { // agregar direccion
             RestTemplate restTemplate = new RestTemplate();
             HttpEntity<Direccion> requestEntity = new HttpEntity<>(usuario.direcciones.get(0));
@@ -240,7 +266,13 @@ public class UsuarioController {
         });
 
         Result result = response.getBody();
-        redirectAttributes.addFlashAttribute("DireccionBorrada", result.Correct);
+        if (result.Correct) {
+            result.Object = "Direccion eliminada";
+        } else {
+            result.Object = "Error al eliminar";
+        }
+        redirectAttributes.addFlashAttribute("borrarDireccion", result);
+
         return "redirect:/Usuario/detail/" + idUsuario;//Lleva al endpoint
 //        return "Index; --- LLeva a una plantilla
     }
@@ -397,21 +429,18 @@ public class UsuarioController {
                     new ParameterizedTypeReference<Result>() {
             });
             Result result = response.getBody();
-            model.addAttribute("respuestaCarga", result.Object);
-            
-                redirectAttributes.addFlashAttribute("mensaje", result.Object);
 
-            
-
+//            model.addAttribute("respuestaCarga", result.Object);
+//                redirectAttributes.addFlashAttribute("mensaje", result.Object);
         } catch (HttpClientErrorException httpEx) {
             ObjectMapper mapper = new ObjectMapper();
             Result resultError = mapper.readValue(httpEx.getResponseBodyAsString(), Result.class);
-            redirectAttributes.addFlashAttribute("mensaje", resultError.Object);
+            redirectAttributes.addFlashAttribute("mensaje", resultError);
             return "redirect:/Usuario/CargaMasiva";
-        }catch (Exception ex) {
+        } catch (Exception ex) {
             System.out.println(ex.getCause());
             System.out.println(ex.getLocalizedMessage());
-        } 
+        }
         return "redirect:/Usuario";
     }
 

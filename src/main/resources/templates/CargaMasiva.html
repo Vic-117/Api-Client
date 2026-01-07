@@ -11,6 +11,7 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <style>
             #formCargaMasiva{
                 /*border: 1px solid #000;*/
@@ -50,7 +51,7 @@
         </style>
 
     </head>
-    
+
     <body class="container p-3">
         <br>
         <h1 class="container text-center">Carga Masiva </h1>
@@ -87,13 +88,13 @@
 
 
                     <!--BOTON PARA ENVIAR EL FORMULARIO-->
-<!--                    <div class="container mb-3">      
-                       
-
-                    </div>-->
+                    <!--                    <div class="container mb-3">      
+                                           
+                    
+                                        </div>-->
                 </div>
             </form>
-            
+
         </section>
 
         <!--SECCION QUE CONTIENE LA TABLA DE ERRORES-->
@@ -117,17 +118,17 @@
                 </table>
 
             </div>
-            
+
             <div th:if="${Errores == null or Errores.size() == 0}">
                 <h4>Archivo correcto: </h4>
                 <form method="POST" action="/Usuario/CargaMasiva/Procesar" >
-                    <button type="submit">Procesar</button>
+                    <button class="btn btn-outline-success" type="submit">Procesar</button>
                     <!--hash-->
                     <input type="hidden" name="token" th:value="${token}">
                 </form>
-                
+
                 <!--<input type="hidden" th:field="${hash}">-->
-<!--                <a th:href="@{/Usuario/CargaMasiva/Procesar}" class="btn btn-success">Procesar archivo</a>-->
+                <!--                <a th:href="@{/Usuario/CargaMasiva/Procesar}" class="btn btn-success">Procesar archivo</a>-->
             </div>
         </div>
 
@@ -136,31 +137,43 @@
 
         <script>
                     function mostrarForm() {
-                        setTimeout(() => {
-                            $("#formCargaMasiva").css("display", "block");
-                        }, 500);
+                    setTimeout(() => {
+                    $("#formCargaMasiva").css("display", "block");
+                    }, 500);
                     }
 
                     function cambiarBotonTxt() {
-                        $("#btn-submit").removeClass("btn-submit-excel");
-                        $("#btn-submit").addClass("btn-submit-txt");
-                        $("#input-file").removeAttr("accept", ".xlsx");
-                        $("#input-file").attr("accept", ".txt");
-                        $("#btns-archivo-submit").css({"display":"block"});
+                    $("#btn-submit").removeClass("btn-submit-excel");
+                    $("#btn-submit").addClass("btn-submit-txt");
+                    $("#input-file").removeAttr("accept", ".xlsx");
+                    $("#input-file").attr("accept", ".txt");
+                    $("#btns-archivo-submit").css({"display":"block"});
                     }
                     function cambiarBotonExcel() {
-                        $("#btn-submit").removeClass("btn-submit-txt");
-                        $("#btn-submit").addClass("btn-submit-excel");
-                        $("#btns-archivo-submit").css({"display":"block"});
-
-                        $("#input-file").removeAttr("accept", ".txt");
-                        $("#input-file").attr("accept", ".xlsx");
+                    $("#btn-submit").removeClass("btn-submit-txt");
+                    $("#btn-submit").addClass("btn-submit-excel");
+                    $("#btns-archivo-submit").css({"display":"block"});
+                    $("#input-file").removeAttr("accept", ".txt");
+                    $("#input-file").attr("accept", ".xlsx");
                     }
 
 
 
 
 
+
+        </script>
+        <script th:if='${mensaje}' th:inline='javascript'>
+            var mensaje = [[${mensaje.Correct}]]
+                    if ([[${mensaje.Correct}]] == false){
+                        Swal.fire({
+                        position: "top-end",
+                                icon: "error",
+                                title: [[${mensaje.Object}]],
+                                showConfirmButton: false,
+                                timer: 3000
+                                });
+            }
 
         </script>
     </body>

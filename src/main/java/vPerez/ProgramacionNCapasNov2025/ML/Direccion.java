@@ -4,7 +4,11 @@
  */
 package vPerez.ProgramacionNCapasNov2025.ML;
 
-
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 /**
  *
@@ -13,13 +17,17 @@ package vPerez.ProgramacionNCapasNov2025.ML;
 public class Direccion {
 
     private int IdDireccion;
+    @NotEmpty(message = "La direccion debe tener calle")
+    @Size(min = 2, max = 49)
     private String calle;
+    @Size(min = 1, max = 49)
     private String numeroInterior;
+    @Size(min = 1, max = 49)
     private String numeroExterior;
+    @NotNull(message = "Ingresa una direccion")
     public Colonia colonia;
-    
-// public Usuario usuario;//RELACION DEL LADO DE MUCHOS,Muchas direcciones son parte de un Usuario
 
+// public Usuario usuario;//RELACION DEL LADO DE MUCHOS,Muchas direcciones son parte de un Usuario
     public int getIdDireccion() {
         return IdDireccion;
     }

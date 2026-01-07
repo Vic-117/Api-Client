@@ -4,11 +4,19 @@
  */
 package vPerez.ProgramacionNCapasNov2025.ML;
 
-
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import java.util.Date;
 import java.util.List;
 import org.springframework.format.annotation.DateTimeFormat;
-
 
 /**
  *
@@ -17,34 +25,44 @@ import org.springframework.format.annotation.DateTimeFormat;
 public class Usuario {
 
     private int idUsuario;
-  
+    @NotBlank()
+    @Size(max = 20, min = 2)
     private String nombre;
- 
+    @NotBlank()
     private String apellidoPaterno;
- 
+    @Size(max = 20)
     private String apellidoMaterno;
-   
+    @NotBlank()
+    @Email
+    @Pattern(regexp = "([A-Z|a-z|0-9](\\.|_){0,1})+[A-Z|a-z|0-9]\\@([A-Z|a-z|0-9])+((\\.){0,1}[A-Z|a-z|0-9]){2}\\.[a-z]{2,3}$")
     private String email;
-    
+    @NotBlank
+    @Size(max = 49, min = 8)
+    @Pattern(regexp = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$")
     private String password;
-    
-     @DateTimeFormat(pattern = "yyyy-MM-dd")
+
+    @PastOrPresent(message = "No esta permitido nacer mañana")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date fechaNacimiento;
 
     public Rol rol;
-    
+    @NotBlank
     private String sexo;
-    
+    @NotBlank
+    @Digits(integer = 15, fraction = 0)
     private String telefono;
-    
+    @Digits(integer = 15, fraction = 0)
     private String celular;
-    
+    @NotBlank()
+    @Pattern(regexp = "[A-Z]{1}[AEIOU]{1}[A-Z]{2}[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])[HM]{1}(AS|BC|BS|CC|CS|CH|CL|CM|DF|DG|GT|GR|HG|JC|MC|MN|MS|NT|NL|OC|PL|QT|QR|SP|SL|SR|TC|TS|TL|VZ|YN|ZS|NE)[B-DF-HJ-NP-TV-Z]{3}[0-9A-Z]{1}[0-9]{1}", message = "CURP no valida")
+
     private String curp;
-   
+    @NotNull(message = "el estatus no debe  faltar")
     private int estatus;
-    
+
     private String imagen;
 
+    @Valid
     public List<Direccion> direcciones;//Relacion del lado de 1, un usuario tiene muchas direcciones
 
     public Usuario() {
@@ -173,9 +191,6 @@ public class Usuario {
     public void setImagen(String imagen) {
         this.imagen = imagen;
     }
-    
-    
-    
 
     public List<Direccion> getDirecciones() {
         return direcciones;
