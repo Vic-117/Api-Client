@@ -89,25 +89,25 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
             <div class="container h-25 w-50 text-center" id="contenedor-img" style="height: 33vh">
 
-                <img class="card-img-top h-75 w-75" id="usuario1" th:src="${Usuario.imagen != null ? 'data:image/*; base64,'+Usuario.imagen : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNT31I-b-Jdf8bjPM-mm-V1qCpb-oudRLvtw&s'}">
+                <img class="card-img-top h-75 w-75" id="usuario1" th:if="${Errores == null}" th:src="${Usuario.imagen != null ? 'data:image/*; base64,'+Usuario.imagen : 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNT31I-b-Jdf8bjPM-mm-V1qCpb-oudRLvtw&s'}">
             </div>
 
 
 
             <!--</div>-->
 
-            <div class="card-title text-center fw-bold btn btn-primary" disabled th:text="|${Usuario.nombre} ${Usuario.apellidoPaterno} ${Usuario.apellidoMaterno}|" style="z-index: 101"></div>
+            <div class="card-title text-center fw-bold btn btn-primary" th:if="${Errores == null}" disabled th:text="|${Usuario.nombre} ${Usuario.apellidoPaterno} ${Usuario.apellidoMaterno}|" style="z-index: 101"></div>
             <div class="card-body" id="info-user">
 
                 <!--<div class="text-center" style="font-weight: 600; font-size: 1.5rem;">INFORMACION</div>-->
-                <p th:utext="|<b>Email:</b> ${Usuario.email}|"></p>
+                <p th:utext="|<b>Email:</b> ${Usuario.email}|" th:if="${Errores == null}"></p>
 
-                <p  th:utext="|<b>Fecha Nacimiento:</b> ${Usuario.fechaNacimiento}|"></p>
-                <p th:utext="|<b>Rol:</b> ${Usuario.rol.idRol}|"></p>
-                <p th:utext="|<b>Sexo:</b> ${Usuario.sexo}|"></p>
-                <p th:utext="|<b>Telefono:</b> ${Usuario.telefono}|"></p>
-                <p th:utext="|<b>Celular:</b> ${Usuario.celular}|"></p>
-                <p th:utext="|<b>Curp:</b> ${Usuario.curp}|"></p>
+                <p  th:utext="|<b>Fecha Nacimiento:</b> ${Usuario.fechaNacimiento}|" th:if="${Errores == null}"></p>
+                <p th:utext="|<b>Rol:</b> ${Usuario.rol.idRol}|"th:if="${Errores == null}"></p>
+                <p th:utext="|<b>Sexo:</b> ${Usuario.sexo}|"th:if="${Errores == null}"></p>
+                <p th:utext="|<b>Telefono:</b> ${Usuario.telefono}|"th:if="${Errores == null}"></p>
+                <p th:utext="|<b>Celular:</b> ${Usuario.celular}|"th:if="${Errores == null}"></p>
+                <p th:utext="|<b>Curp:</b> ${Usuario.curp}|"th:if="${Errores == null}"></p>
 
                 <!--<a href="url" class="btn btn-warning col-12" th:href="@{/Usuario/formularioEditable?idUsuario=}+${Usuario.idUsuario}">Editar</a>-->
 
@@ -115,7 +115,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
 
                 <button class="btn btn-outline-secondary mb-3 col-12" id="btnFoto">Cambiar Foto</button>
-                <form enctype="multipart/form-data" th:Object="${Usuario}"  method="POST" th:action="@{/Usuario/ImagenPerfil}">
+                <form  th:if="${Errores == null}" enctype="multipart/form-data" th:Object="${Usuario}"  method="POST" th:action="@{/Usuario/ImagenPerfil}">
                     <input type="file" hidden id="inputImg" name="imagenInput" class="mb-3"accept="image/*">
                     <input type="hidden" th:field="${Usuario.idUsuario}">
                     <button hidden type="submit" id="btnSubImg"></button>
@@ -128,7 +128,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
         </section>
         <!--<br>-->
         <!--SECCION DE DIRECCION-->
-        <section class="container col-12 col-sm-12 col-md-12 col-lg-7 col-xl-8 " id="Seccion-Direccion" style="height: 99dvh; display: flex;">
+        <section th:if="${Errores == null}" class="container col-12 col-sm-12 col-md-12 col-lg-7 col-xl-8 " id="Seccion-Direccion" style="height: 99dvh; display: flex;">
             <div class="card w-100">
                 <div class="card-body">
                     <div class="card-title text-center"  style="font-weight: bold; font-size: 2rem">DIRECCIONES</div>
@@ -175,7 +175,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
         <!--MODAL USUARIO-->
         <section class="modal fade" id="my-modal">
-            <div class="modal-dialog modal-lg">
+            <div class="modal-dialog modal-fullscreen">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Editar usuario</h5>
@@ -187,7 +187,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
 
 
-                        <form class="needs-validation"  method="post" th:object="${Usuario}" th:action="@{/Usuario/add}" style="margin:2rem; flex-direction: column">
+                        <form class="needs-validation"  method="post" th:object="${Usuario}" th:action="@{/Usuario/add}"style="margin:2rem; flex-direction: column">
 
                             <!--<input type="hidden" th:field="${Usuario.Direcciones[0].idDireccion}">-->
                             <input type="hidden" th:field="${Usuario.idUsuario}">
@@ -205,25 +205,30 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                                         <i class="bi bi-person-circle "></i>
                                         <b>Nombres:</b>
                                     </span>
-
-                                    <input type ="text" placeholder="Nombres" class="form-control " th:field="*{nombre}" onkeypress="soloLetras(event, this)" required >  
+                                    <!--INPUT NOMBRE-->
+                                    <input type ="text" placeholder="Nombres" id="input-nombre"class="form-control " th:field="*{nombre}" onkeypress="soloLetras(event, this)" required >  
 
                                     <span class="error-message mb-3 " style="font-size: 0.8rem" />
-                                    <span class="text-danger mb-3 "  th:if="${#fields.hasErrors('nombre')}" th:errors="${Usuario.nombre}" style="font-size: 0.8rem" />
-<!--                                    <span class="text-danger mb-3 "  th:if="${Errores != null}" th:each="error : ${Errores}"
-                                          th:if="${error.field == 'nombre'}"
-                                          th:text="${error.defaultMessage}"style="font-size: 0.8rem" />-->
+                                    <!--<span class="text-danger mb-3 "  th:if="${#fields.hasErrors('nombre')}" th:errors="${Usuario.nombre}" style="font-size: 0.8rem" />-->
+                                    <span class="text-danger mb-3 "  th:if="${Errores != null} AND ${error.field == 'nombre'}" th:each="error : ${Errores}"
+                                          th:text="${error.defaultMessage}"style="font-size: 0.8rem" />
                                 </div>
 
                                 <div class="row" style="" >
-                                    <span class="fw-bold">Apellidos:</span>
-
-                                    <input type="text" class="form-control mb-3" placeholder="Paterno"  th:field="*{apellidoPaterno}" required  onkeypress="soloLetras(event, this)">
-                                    <span class="text-danger " style="font-size: 0.8rem" th:if="${#fields.hasErrors('apellidoPaterno')}" th:errors="${Usuario.apellidoPaterno}" />
-
-                                    <input type="text" class="form-control" placeholder="Materno" th:field="*{apellidoMaterno}" required  onkeypress="soloLetras(event, this)">
+                                    <span class="fw-bold">Apellido Paterno:</span>
+                                    <!--INPUT APELLIDO-->
+                                    <input type="text" class="form-control mb-3" id="input-aPaterno" placeholder="Paterno"  th:field="*{apellidoPaterno}" required  onkeypress="soloLetras(event, this)">
+                                    <span class="text-danger " style="font-size: 0.8rem" th:if="${Errores != null} AND ${error.field == 'apellidoPaterno'}" th:each="error:${Errores}" 
+                                          th:text="${error.defaultMessage}"/>
+                                    <!--<span class="text-danger mb-3 "  th:if="${#fields.hasErrors('apellidoPaterno')}" th:errors="${Usuario.apellidoPaterno}" style="font-size: 0.8rem" />-->
+                                </div>
+                                <div class="row" style="" >
+                                    <span class="fw-bold">Apellido Materno:</span>
+                                    <!--INPUT APELLIDO-->
+                                    <input type="text" class="form-control" id="input-aMaterno"placeholder="Materno" th:field="*{apellidoMaterno}" required  onkeypress="soloLetras(event, this)">
                                     <span class="error-message row" style="font-size: 0.8rem" />
-                                    <span class="text-danger col-2" style="font-size: 0.8rem;" th:if="${#fields.hasErrors('apellidoMaterno')}" th:errors="${Usuario.apellidoMaterno}" />
+                                    <span class="text-danger row" style="font-size: 0.8rem;" th:if="${Errores != null} AND ${error.field == 'apellidoMaterno'}" th:each="error:${Errores}"
+                                          th:text="${error.defaultMessage}"/>
                                 </div>
 
 
@@ -237,22 +242,19 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                                         Correo:
 
                                     </span>
-
-                                    <input type="text" class="form-control " placeholder="Correo" th:field="*{email}" required  onblur="emailValidator(this)">
-                                    <span class="text-danger " style="font-size: 0.8rem;" th:if="${#fields.hasErrors('email')}" th:errors ='${Usuario.email}' />
+                                    <!--INPUT EMAIL-->
+                                    <input id="input-email" type="text" class="form-control " placeholder="Correo" th:field="*{email}" required  onblur="emailValidator(this)">
+                                    <span class="text-danger " style="font-size: 0.8rem;" th:if="${Errores != null} AND ${error.field == 'email'}" th:each="error:${Errores}"
+                                          th:text="${error.defaultMessage}"/>
                                     <span id="emailMessage" ></span>
                                 </div>
 
 
-                                <!--                                <div class="row mb-3" style="">
-                                                                    <span class="fw-bold">Contraseña:</span>
-                                
-                                                                    <input type="password" placeholder="contraseña" class="form-control" required th:field="*{password}" onblur="passVal(this)">-->
-                                <input type="hidden" placeholder="contraseña" class="form-control" th:field="*{password}" onblur="passVal(this)">
+                                <!--INPUT PASSWORD-->
+                                <input id="input-password" type="hidden" placeholder="contraseña" class="form-control" th:field="*{password}" onblur="passVal(this)">
+                                <span class="tetx-danger" style="font-size:0.8rem" th:if="${Errores != null} AND ${error.field == 'password'}"th:each="error:${Errores}"
+                                      th:text="${error.defaultMessage}"/>
 
-                                <!--                                    <span class="error-message mb-3 row" style="font-size: 0.8rem" />
-                                                                    <span class="text-danger  row" style="font-size: 0.8rem" th:if="${#fields.hasErrors('password')}" th:errors ="${Usuario.password}" />
-                                                                </div>-->
 
 
 
@@ -260,25 +262,24 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                                 <div class="row mb-3" style="">
 
                                     <span class="input-group-text fw-bold"> <i class="bi bi-telephone"></i>Telefono:</span>
-                                    <input type = "number" placeholder="Telefono" class="form-control " th:field="*{telefono}"  required  onblur="validarNumero(this)">
+                                    <!--INPUT TELEFONO-->
+                                    <input id="input-telefono" type = "number" placeholder="Telefono" class="form-control " th:field="*{telefono}"  required  onblur="validarNumero(this)">
 
                                     <span class="error-message mb-3 row" style="font-size: 0.8rem" />
-                                    <span class="text-danger  row" style="font-size: 0.8rem" th:if="${#fields.hasErrors('telefono')}" th:errors="${Usuario.telefono}" />
+                                    <span class="text-danger  row" style="font-size: 0.8rem" th:if="${Errores != null} AND ${error.field == 'telefono'}" th:each="error:${Errores}"
+                                          th:text="${error.defaultMessage}"/>
 
                                 </div>
 
                                 <div class="row" style="">
 
                                     <span class="input-group-text fw-bold" > <i class="bi bi-phone"></i>celular</span>
-                                    <input type = "number" placeholder="Celular" class="form-control" th:field="*{celular}"  required  onblur="validarNumero(this)">
+                                    <!--INPUT CELULAR-->
+                                    <input id="input-celular" type = "number" placeholder="Celular" class="form-control" th:field="*{celular}"  required  onblur="validarNumero(this)">
                                     <span class="error-message mb-3 row" style="font-size: 0.8rem" />
-                                    <span class="text-danger  row" style="font-size: 0.8rem" th:if="${#fields.hasErrors('celular')}" th:errors="${Usuario.celular}"/>
-                                    <span class="text-danger  row" style="font-size: 0.8rem" th:if="${#fields.hasErrors('telefono')}" th:errors="${Usuario.telefono}" />
+                                    <span class="text-danger  row" style="font-size: 0.8rem" th:if="${Errores!= null} AND ${error.field == 'celular'}" th:each="error:${Errores}"
+                                          th:text="${error.defaultMessage}"/>
                                 </div>
-
-
-
-
 
                                 <br>
 
@@ -287,24 +288,27 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                                     <span class="input-group-text fw-bold ">Sexo:</span>
                                     <span class="input-group-text  col-3">Femenino:</span>
                                     <div class="input-group-text col-1" style="background-color:#A8BCD1">
+                                        <!--INPUT SEXO F-->
                                         <input type = "radio" value="F" id="femenino" name="sexo" class="form-check-input mt-0" th:field="*{sexo}"  th:checked="*{sexo}">
-
-
                                     </div>
                                     <span class="input-group-text  col-3">Masculino:</span>
                                     <div class="input-group-text col-1" style="background:#A8BCD1 ">
+                                        <!--INPUT SEXO M-->
+
                                         <input type = "radio" value="M" id="masculino" name="sexo" class="form-check-input mt-0" th:field="*{sexo}" th:checked="*{sexo}" >
                                     </div>
                                 </div>
-                                <span class="text-danger  row" style="font-size: 0.8rem" th:if="${#fields.hasErrors('sexo')}" th:errors="${Usuario.sexo}" />
+                                <span class="text-danger  row" style="font-size: 0.8rem" th:if="${Errores!= null} AND ${error.field == 'sexo'} " th:each="error:${Errores}"
+                                      th:text="${error.defaultMessage}"/>
 
 
 
                                 <div class="row mb-3" style="">
                                     <label class="input-group-text fw-bold ">Fecha de Nacimiento:</label>
-                                    <input type = "date" class="form-control col-sm-8 col-md-6" th:field="*{fechaNacimiento}"  onblur="validarNacimiento(this)">
+                                    <input id="input-fechaNacimiento" type = "date" class="form-control col-sm-8 col-md-6" th:field="*{fechaNacimiento}"  onblur="validarNacimiento(this)">
                                     <span class="error-message mb-3 row" style="font-size: 0.8rem" />
-                                    <span class="text-danger  row" style="font-size: 0.8rem"  th:if="${#fields.hasErrors('fechaNacimiento')}" th:errors='${Usuario.fechaNacimiento}'/>
+                                    <span class="text-danger  row" style="font-size: 0.8rem"  th:if="${Errores != null} AND ${error.field=='fechaNacimiento'}" th:each="error:${Errores}"
+                                          th:text="${error.defaultMessage}"/>
 
                                 </div>
 
@@ -315,20 +319,21 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
                                 <div class="row" style="">
                                     <label class="input-group-text fw-bold">CURP:</label>
-                                    <input type = "text" placeholder="CURP" class="form-control col-10" th:field="*{curp}" onblur="validarCurp(this)"> 
+                                    <!--INPUT CORREO-->
+                                    <input id="input-curp" type = "text" placeholder="CURP" class="form-control col-10" th:field="*{curp}" onblur="validarCurp(this)"> 
                                     <span class="error-message mb-3 row" style="font-size: 0.8rem" />
-                                    <span class="text-danger  row" style="font-size: 0.8rem" th:if="${#fields.hasErrors('curp')}" th:errors="${Usuario.curp}"/>
+                                    <span class="text-danger  row" style="font-size: 0.8rem" th:if="${Errores != null} AND ${error.field=='curp'}" th:each="error:${Errores}"/>
 
                                 </div>
 
                                 <div class="row" style="" >
-                                    <span class="input-group-text fw-bold">Rol:</span>
+                                    <span  class="input-group-text fw-bold">Rol:</span>
                                     <select class="form-control" id = "rolddl"th:field="*{rol.idRol}" onblur="validarRol(this)">
                                         <option value=0>Elige tu rol</option>
                                         <option th:each="rol:${Roles}"  th:text="${rol.nombre}" th:value="${rol.idRol}" ></option>
                                     </select>
                                     <span class="error-message mb-3 row" style="font-size: 0.8rem" />
-                                    <span class="text-danger mb-3 row" style="font-size: 0.8rem" th:if="${#fields.hasErrors('rol.idRol')}" th:errors="$(Usuario.idRol}" />
+                                    <span class="text-danger mb-3 row" style="font-size: 0.8rem" th:if="${Errores != null} AND ${error.field=='rol'}" th:each="error:${Errores}" />
 
                                 </div>
 
@@ -351,7 +356,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="button" class="btn btn-danger" th:onclick="|cerrarModal(${Usuario.idUsuario})|" data-bs-dismiss="modal">Cerrar</button>
                     </div>
                 </div>
             </div>
@@ -984,10 +989,26 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
             }
 
         </script>
+        <script>
+            function cerrarModal(idUsuario){
+                window.location.href = "/Usuario/detail/"+idUsuario;
+                ()=>{
+                   
+                }
+            }
+            
+        </script>
+        
+<!--        <script th:if="${Errores != null}" th:inline="javascript">
+//            $("#input-nombre").val("hola");
+            $("#input-nombre").val([[${Usuario.nombre}]]);
+        </script>-->
         <script th:if="${ErroresDireccion}==true OR ${ErroresDireccion}">
 
             $("#btnEditarUsuario").click();
         </script>
+        
+        
 
         <script th:if="${ErroresDireccion}">
 

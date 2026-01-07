@@ -25,23 +25,25 @@ import org.springframework.format.annotation.DateTimeFormat;
 public class Usuario {
 
     private int idUsuario;
-    @NotBlank()
-    @Size(max = 20, min = 2)
+    @NotBlank(message = "Por favor, llena el campo")
+    @Size(max = 20, message = "Maximo se permiten 20 caracteres")
+    @Size(min=2, message = "Minimo se permiten 2 caracteres")
     private String nombre;
-    @NotBlank()
+    @NotBlank(message = "Por favor, llena el campo")
+    @Size(max = 20, message = "Solo de permiten 20 caracteres como máximo")
     private String apellidoPaterno;
-    @Size(max = 20)
+    @Size(max = 20, message = "Solo de permiten 20 caracteres como máximo")
     private String apellidoMaterno;
-    @NotBlank()
+    @NotBlank(message = "Por favor, llena el campo")
     @Email
-    @Pattern(regexp = "([A-Z|a-z|0-9](\\.|_){0,1})+[A-Z|a-z|0-9]\\@([A-Z|a-z|0-9])+((\\.){0,1}[A-Z|a-z|0-9]){2}\\.[a-z]{2,3}$")
+    @Pattern(regexp = "([A-Z|a-z|0-9](\\.|_){0,1})+[A-Z|a-z|0-9]\\@([A-Z|a-z|0-9])+((\\.){0,1}[A-Z|a-z|0-9]){2}\\.[a-z]{2,3}$",message = "Email no valido")
     private String email;
     @NotBlank
     @Size(max = 49, min = 8)
-    @Pattern(regexp = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$")
+    @Pattern(regexp = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$", message = "Contraseña Incorrecta")
     private String password;
 
-    @PastOrPresent(message = "No esta permitido nacer mañana")
+    @PastOrPresent(message = "No esta permitido nacer despues de hoy")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date fechaNacimiento;
 
@@ -57,7 +59,7 @@ public class Usuario {
     @Pattern(regexp = "[A-Z]{1}[AEIOU]{1}[A-Z]{2}[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])[HM]{1}(AS|BC|BS|CC|CS|CH|CL|CM|DF|DG|GT|GR|HG|JC|MC|MN|MS|NT|NL|OC|PL|QT|QR|SP|SL|SR|TC|TS|TL|VZ|YN|ZS|NE)[B-DF-HJ-NP-TV-Z]{3}[0-9A-Z]{1}[0-9]{1}", message = "CURP no valida")
 
     private String curp;
-    @NotNull(message = "el estatus no debe  faltar")
+    @NotNull(message = "El estatus no debe  faltar")
     private int estatus;
 
     private String imagen;
