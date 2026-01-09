@@ -145,7 +145,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
                                     <div class="btn-group">
                                         <!--BOTON EDITAR DEL MODAL DIRECCION-->
-                                        <button class="btn btn-warning"  data-bs-toggle="modal" data-bs-target="#modalDireccion" th:onclick="|EditarDireccion(${Usuario.idUsuario},${direccion.idDireccion})|">
+                                        <button class="btn btn-warning"  data-bs-toggle="modal" data-bs-target="#modalDireccion" id="btnEditarDireccion" th:onclick="|EditarDireccion(${Usuario.idUsuario},${direccion.idDireccion})|">
                                             <!--@{/Usuario/formularioEditable?idUsuario=}+${Usuario.idUsuario}-->
                                             <i class="bi bi-pencil-square"></i>
                                         </button>
@@ -164,7 +164,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                             </tr>
                         </tbody>
                     </table>
-                    <button class="col-sm-12 col-xs-12  col-md-4 btn btn-success" data-bs-toggle="modal" data-bs-target="#modalDireccion" th:onclick="AgregarDireccion()">Agregar nueva dirección</button>
+                    <button class="col-sm-12 col-xs-12  col-md-4 btn btn-success" data-bs-toggle="modal" data-bs-target="#modalDireccion" id="btnAgregarDireccion" th:onclick="AgregarDireccion()">Agregar nueva dirección</button>
                 </div>
             </div>
 
@@ -174,12 +174,12 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
 
         <!--MODAL USUARIO-->
-        <section class="modal fade" id="my-modal">
+        <section class="modal fade" id="my-modal" style="padding: 0">
             <div class="modal-dialog modal-fullscreen">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">Editar usuario</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" th:onclick="|cerrarModal(${Usuario.idUsuario})|"></button>
                     </div>
                     <!--CUERPO DEL MODAL-->
                     <div class="modal-body">
@@ -356,7 +356,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-danger" th:onclick="|cerrarModal(${Usuario.idUsuario})|" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="button" class="btn btn-danger" id="cerrarModalUsuario" th:onclick="|cerrarModal(${Usuario.idUsuario})|" data-bs-dismiss="modal">Cerrar</button>
                     </div>
                 </div>
             </div>
@@ -367,12 +367,12 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
 
         <!--MODAL DIRECCION-->
-        <section class="modal fade" id="modalDireccion">
-            <div class="modal-dialog modal-xl">
+        <section class="modal fade" id="modalDireccion" style="padding: 0">
+            <div class="modal-dialog modal-fullscreen">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">DIRECCIÓN </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" th:onclick="|cerrarModal(${Usuario.idUsuario})|"></button>
                     </div>
                     <!--CUERPO DEL MODAL DIRECCION-->
                     <div class="modal-body">
@@ -402,7 +402,9 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
                                     <!--<span class="error-message mb-3 row" style="font-size: 0.8rem" />-->
                                     <span class="error-message mb-3 row" id="calleMensaje" style="font-size: 0.8rem" />
-                                    <span class="text-danger mb-3 row" style="font-size: 0.8rem" th:if="${#fields.hasErrors('direcciones[0].calle')}" th:errors="$(direcciones[0].calle)"/>
+                                    <!--<span class="text-danger mb-3 row" style="font-size: 0.8rem" th:if="${#fields.hasErrors('direcciones[0].calle')}" th:errors="$(direcciones[0].calle)"/>-->
+                                     <span class="text-danger mb-3 "  th:if="${ErroresEditarDireccion != null} AND ${error.field == 'direcciones[0].calle'}" th:each="error : ${ErroresEditarDireccion}"
+                                          th:text="${error.defaultMessage}"style="font-size: 0.8rem" />
                                 </div>
 
                                 <div class="row  mb-3" style="">
@@ -410,14 +412,15 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
                                     <!--INPUT-->
                                     <input type="text" id="noInterior" class="form-control mb-3 " th:field="*{direcciones[0].numeroInterior}"  onblur="validarNumeroCalle(this)" required>
-                                    <span class="error-message mb-3 row" style="font-size: 0.8rem" />
+                                    <span class="error-message mb-3 row" style="font-size: 0.8rem" th:if="${ErroresEditarDireccion != null} AND ${error.field =='direcciones[0].numeroInterior'}" th:text="${error.defaultMessage}" />
                                 </div>
 
                                 <div class="row  mb-3" style="">
                                     <!--INPUT-->
                                     <label class="input-group-text fw-bold">No.Exterior</label>
                                     <input type="text" id="noExterior" class="form-control" th:field="*{direcciones[0].numeroExterior}"  onblur="validarNumeroCalle(this)" required>
-                                    <span class="error-message mb-3 row" style="font-size: 0.8rem" />
+                                    <span class="error-message mb-3 row" style="font-size: 0.8rem" th:if="${ErroresEditarDireccion != null} AND ${error.field =='direcciones[0].numeroExterior'}" th:text="${error.defaultMessage}" />
+                                    <!--<span class="error-message mb-3 row" style="font-size: 0.8rem" />-->
 
                                 </div>
 
@@ -491,6 +494,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
         <!--SCRIPTS-->
         <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+        <script></script>
         <script>
                                         function soloLetras(event, input) {
 
@@ -699,6 +703,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
 
         </script>
+
 
         <script th:inline="javascript">
 
@@ -989,31 +994,50 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
             }
 
         </script>
-        <script>
+
+        <script th:if="${Errores} OR ${ErroresEditarDireccion} ">
             function cerrarModal(idUsuario){
-                window.location.href = "/Usuario/detail/"+idUsuario;
-                ()=>{
-                   
-                }
+            window.location.href = "/Usuario/detail/" + idUsuario;
             }
-            
+            $(document).ready(function(){
+
+            $(document).keydown(function(event){
+            console.log(event.key);
+            console.log(event.wich);
+            if (event.key === 'Escape' || event.keyCode === 27){
+                location.reload();
+            }
+
+            });
+            });
+
+
+
         </script>
-        
-<!--        <script th:if="${Errores != null}" th:inline="javascript">
-//            $("#input-nombre").val("hola");
-            $("#input-nombre").val([[${Usuario.nombre}]]);
+
+        <!--        <script th:if="${Errores != null}" th:inline="javascript">
+        //            $("#input-nombre").val("hola");
+                    $("#input-nombre").val([[${Usuario.nombre}]]);
+                </script>-->
+
+        <script th:if="${ErroresUsuario}==true OR ${Errores}">
+
+            $("#btnEditarUsuario").click();
+        </script>
+        <script th:if="${ErroresEditarDireccion}">
+
+            $("#btnEditarDireccion").click();
+        </script>
+        <script th:if="${ErroresUsuario}==true OR ${Errores}">
+
+            $("#btnEditarUsuario").click();
+        </script>
+
+
+<!--        <script th:if="${ErroresDireccion}">
+
+            $("#btnEditarUsuario").click();
         </script>-->
-        <script th:if="${ErroresDireccion}==true OR ${ErroresDireccion}">
-
-            $("#btnEditarUsuario").click();
-        </script>
-        
-        
-
-        <script th:if="${ErroresDireccion}">
-
-            $("#btnEditarUsuario").click();
-        </script>
 
 
 

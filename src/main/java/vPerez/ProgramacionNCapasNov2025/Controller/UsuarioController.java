@@ -168,11 +168,11 @@ public class UsuarioController {
         } else if (usuario.getIdUsuario() > 0 && usuario.direcciones == null) { // editar usuario
 
             if (bindingResult.hasErrors()) {
-                redirectAttributes.addFlashAttribute("ErroresDireccion",true);
-                redirectAttributes.addFlashAttribute("Usuario",usuario);
-                redirectAttributes.addFlashAttribute("Errores",bindingResult.getAllErrors());
-                System.out.println(bindingResult.getErrorCount());
-                System.out.println(bindingResult.getAllErrors());
+                redirectAttributes.addFlashAttribute("ErroresUsuario", true);
+                redirectAttributes.addFlashAttribute("Usuario", usuario);
+                redirectAttributes.addFlashAttribute("Errores", bindingResult.getAllErrors());
+//                System.out.println(bindingResult.getErrorCount());
+//                System.out.println(bindingResult.getAllErrors());
                 return "redirect:/Usuario/detail/" + usuario.getIdUsuario();
             } else {
                 RestTemplate restTemplate = new RestTemplate();
@@ -193,17 +193,29 @@ public class UsuarioController {
 
         } else if ((usuario.getIdUsuario() > 0 && usuario.direcciones.get(0).getIdDireccion() > 0)) { // editar direccion
 
-            RestTemplate restTemplate = new RestTemplate();
+            if (bindingResult.hasErrors()) {
 
-            HttpEntity<Direccion> httpEntity = new HttpEntity<>(usuario.direcciones.get(0));
+                if (bindingResult.getFieldError("direcciones[0].calle") != null) {
 
-            ResponseEntity<Result> response = restTemplate.exchange(url + "/direccion/" + usuario.direcciones.get(0).getIdDireccion(),
-                    HttpMethod.PUT,
-                    httpEntity,
-                    new ParameterizedTypeReference<Result>() {
-            });
-            Result result = response.getBody();
+                    redirectAttributes.addFlashAttribute("ErrorDireccion", true);
+                    redirectAttributes.addFlashAttribute("Usuario", usuario);
+                    System.out.println(bindingResult.getFieldErrors());
+                    System.out.println(bindingResult.getAllErrors());
+                    redirectAttributes.addFlashAttribute("ErroresEditarDireccion", bindingResult.getAllErrors());
+                }
+            } else {
+                RestTemplate restTemplate = new RestTemplate();
+
+                HttpEntity<Direccion> httpEntity = new HttpEntity<>(usuario.direcciones.get(0));
+
+                ResponseEntity<Result> response = restTemplate.exchange(url + "/direccion/" + usuario.direcciones.get(0).getIdDireccion(),
+                        HttpMethod.PUT,
+                        httpEntity,
+                        new ParameterizedTypeReference<Result>() {
+                });
+                Result result = response.getBody();
 //                redirectAttributes.addFlashAttribute("resultadoUpdateDireccion", result);
+            }
 
             return "redirect:/Usuario/detail/" + usuario.getIdUsuario();
 
@@ -279,14 +291,14 @@ public class UsuarioController {
 
     @GetMapping("detail/{idUsuario}")
     public String getUsuario(@PathVariable("idUsuario") int idUsuario, Model model, RedirectAttributes redirectAttributes) {
-        
+
         RestTemplate restTemplate = new RestTemplate();
-        if(model.getAttribute("Errores")!=null){
-            Usuario user =(Usuario) model.getAttribute("Usuario");
+        if (model.getAttribute("Errores") != null) {
+            Usuario user = (Usuario) model.getAttribute("Usuario");
             user.direcciones = new ArrayList<>();
 //            user.direcciones.add(new Direccion());
-             model.addAttribute("Usuario", user);
-        }else{
+            model.addAttribute("Usuario", user);
+        } else {
             ResponseEntity<Result<Usuario>> response = restTemplate.exchange(url + "/usuarios/" + idUsuario,
                     HttpMethod.GET,
                     HttpEntity.EMPTY,
@@ -294,9 +306,8 @@ public class UsuarioController {
             });
 
             Result resultUsuario = response.getBody();
-             model.addAttribute("Usuario", resultUsuario.Object);
+            model.addAttribute("Usuario", resultUsuario.Object);
         }
-
 
         ResponseEntity<Result<List<Rol>>> responseRol = restTemplate.exchange(url + "/rol",
                 HttpMethod.GET,
@@ -315,7 +326,6 @@ public class UsuarioController {
 
         model.addAttribute("Paises", resultPais.Object);
         model.addAttribute("Roles", resultRol.Object);//Agregado 12/12/2025
-       
 
         return "detalleUsuario";
     }
