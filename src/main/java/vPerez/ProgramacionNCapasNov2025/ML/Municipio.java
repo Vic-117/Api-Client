@@ -4,6 +4,7 @@
  */
 package vPerez.ProgramacionNCapasNov2025.ML;
 
+import jakarta.validation.constraints.NotNull;
 
 /**
  *
@@ -12,7 +13,9 @@ package vPerez.ProgramacionNCapasNov2025.ML;
 public class Municipio {
 
     private int idMunicipio;
+    @NotNull
     private String nombre;
+    @NotNull(message = "Ingresa una direccion")
     public Estado estado;
 
     public int getIdMunicipio() {

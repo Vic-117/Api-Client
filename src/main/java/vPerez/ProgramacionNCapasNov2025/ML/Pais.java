@@ -4,12 +4,16 @@
  */
 package vPerez.ProgramacionNCapasNov2025.ML;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+
 /**
  *
  * @author digis
  */
 public class Pais {
     private int idPais;
+    @NotEmpty
     private String nombre;
     
     public int getIdPais(){

@@ -4,27 +4,33 @@
  */
 package vPerez.ProgramacionNCapasNov2025.ML;
 
+import jakarta.validation.constraints.NotNull;
+
 /**
  *
  * @author digis
  */
 public class Estado {
+
     private int idEstado;
+    @NotNull
     private String nombre;
+    @NotNull(message = "Ingresa una direccion")
     public Pais pais;
-    
-    public int getIdEstado(){
+
+    public int getIdEstado() {
         return idEstado;
     }
-    public void setIdEstado(int idEstado){
+
+    public void setIdEstado(int idEstado) {
         this.idEstado = idEstado;
     }
-    
-    public String getNombre(){
+
+    public String getNombre() {
         return nombre;
     }
-    
-    public void setNombre(String nombre){
+
+    public void setNombre(String nombre) {
         this.nombre = nombre;
     }
 
@@ -35,6 +41,5 @@ public class Estado {
     public void setPais(Pais pais) {
         this.pais = pais;
     }
-    
-    
+
 }

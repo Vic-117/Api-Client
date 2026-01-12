@@ -394,32 +394,35 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
                                 <h3 style="font-weight: bold"></h3>
 
-
+                                <!--APARTADO DE CALLE-->
                                 <div class="row mb-3" style="">
                                     <label class="input-group-text fw-bold">calle</label>
                                     <!--INPUT-->
-                                    <input type="text" class="form-control mb-3" id="Dircalle" th:field="${Usuario.direcciones[0].calle}" onkeypress="validarCalle(event, this)">
+                                    <input type="text" class="form-control mb-3" id="Dircalle" th:field="${Usuario.direcciones[0].calle}"  onblur="validarCalle(this)">
 
-                                    <!--<span class="error-message mb-3 row" style="font-size: 0.8rem" />-->
                                     <span class="error-message mb-3 row" id="calleMensaje" style="font-size: 0.8rem" />
                                     <!--<span class="text-danger mb-3 row" style="font-size: 0.8rem" th:if="${#fields.hasErrors('direcciones[0].calle')}" th:errors="$(direcciones[0].calle)"/>-->
-                                     <span class="text-danger mb-3 "  th:if="${ErroresEditarDireccion != null} AND ${error.field == 'direcciones[0].calle'}" th:each="error : ${ErroresEditarDireccion}"
+                                    <span class="text-danger"  th:if="${ErroresEditarDireccion != null} AND ${error.field == 'direcciones[0].calle'}" th:each="error : ${ErroresEditarDireccion}"
                                           th:text="${error.defaultMessage}"style="font-size: 0.8rem" />
                                 </div>
 
+                                <!--APARTADO DE NUMERO INTERIOR-->
                                 <div class="row  mb-3" style="">
                                     <label class="input-group-text fw-bold">No.Interior</label>
 
                                     <!--INPUT-->
-                                    <input type="text" id="noInterior" class="form-control mb-3 " th:field="*{direcciones[0].numeroInterior}"  onblur="validarNumeroCalle(this)" required>
-                                    <span class="error-message mb-3 row" style="font-size: 0.8rem" th:if="${ErroresEditarDireccion != null} AND ${error.field =='direcciones[0].numeroInterior'}" th:text="${error.defaultMessage}" />
+                                    <input type="text" id="noInterior" class="form-control" th:field="*{direcciones[0].numeroInterior}"  onblur="validarNumeroCalle(this)" required>
+                                    <span class="error-message row" id="numeroIntMensaje" style="font-size: 0.8rem" />
+                                    <span class="error-message text-danger row" style="font-size: 0.8rem" th:if="${ErroresEditarDireccion != null} AND ${error.field =='direcciones[0].numeroInterior'}" th:each="error : ${ErroresEditarDireccion}" th:text="${error.defaultMessage}" />
                                 </div>
 
+                                <!--APARTADO DE NUMERO EXTERIOR-->
                                 <div class="row  mb-3" style="">
                                     <!--INPUT-->
                                     <label class="input-group-text fw-bold">No.Exterior</label>
                                     <input type="text" id="noExterior" class="form-control" th:field="*{direcciones[0].numeroExterior}"  onblur="validarNumeroCalle(this)" required>
-                                    <span class="error-message mb-3 row" style="font-size: 0.8rem" th:if="${ErroresEditarDireccion != null} AND ${error.field =='direcciones[0].numeroExterior'}" th:text="${error.defaultMessage}" />
+                                    <span class="error-message row" id="numeroExtMensaje" style="font-size: 0.8rem" />
+                                    <span class="text-danger error-message row" style="font-size: 0.8rem" th:if="${ErroresEditarDireccion != null} AND ${error.field =='direcciones[0].numeroExterior'}"  th:each="error:${ErroresEditarDireccion}" th:text="${error.defaultMessage}" />
                                     <!--<span class="error-message mb-3 row" style="font-size: 0.8rem" />-->
 
                                 </div>
@@ -432,36 +435,45 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                                                                     <input type="text"  id="idCol" class="form-control " th:field="*{direcciones[0].colonia.idColonia}">
                                 
                                                                 </div>-->
-
+                                <!--APARTADO DE PAIS-->
                                 <div class="row  mb-3" style="">
                                     <label class="input-group-text fw-bold" >Pais:</label>
-                                    <select class="form-control" id="ddlPais" onchange="paisddl()">
+                                    <select class="form-control" id="ddlPais" onchange="paisddl()" required>
                                         <option value="0">Elige un pais de la lista</option>
                                         <option th:each="pais:${Paises}" th:value="${pais.idPais}" th:text="${pais.nombre}"></option>
                                         <!--<option  th:value="${pais.idPais}" th:text="${pais.Nombre}"></option>-->
                                     </select>
+                                    <label class="error-message text-danger" th:if="${ErroresEditarDireccion != null} AND ${error.field == '${direcciones[0].colonia.municipio.estado.pais}' }" th:each="error:${ErroresEditarDireccion}"/>
                                 </div>
 
+                                <!--APARTADO DE ESTADO-->
                                 <div class="row mb-3">
                                     <label class="input-group-text fw-bold" >Estado:</label>
-                                    <select  class="form-control" id="ddlEstado" onchange="cambiarEstado()">
+                                    <select  class="form-control" id="ddlEstado" onchange="cambiarEstado()" required>
                                         <option value=0>Selecciona un Estado</option>
 
                                     </select>
+                                    <label class="error-message text-danger" th:if="${ErroresEditarDireccion != null} AND ${error.field == '${direcciones[0].colonia.municipio.estado}' }" th:each="error:${ErroresEditarDireccion}"/>
                                 </div>
+
+                                <!--APARTADO DE MUNCIPIO-->
 
                                 <div class="row mb-3">
                                     <label class="input-group-text fw-bold " >Municipio:</label>
-                                    <select  class="form-control" id="ddlMunicipio" onchange="cambiaMunicipio()" th:field="*{direcciones[0].colonia.municipio.idMunicipio}">
+                                    <select  class="form-control" id="ddlMunicipio" onchange="cambiaMunicipio()" th:field="*{direcciones[0].colonia.municipio.idMunicipio}" required>
                                         <option value=0>Selecciona un Municipio</option>
                                     </select>
+                                    <label class="error-message text-danger" th:if="${ErroresEditarDireccion != null} AND ${error.field == '${direcciones[0].colonia.municipio}' }" th:each="error:${ErroresEditarDireccion}"/>
                                 </div>
+
+                                <!--APARTADO DE COLONIA-->
 
                                 <div class="row mb-3">
                                     <label class="input-group-text fw-bold" >Colonia:</label>
-                                    <select class="form-control" id="ddlColonia" th:field="*{direcciones[0].colonia.idColonia}">
+                                    <select class="form-control" id="ddlColonia" th:field="*{direcciones[0].colonia.idColonia}" required>
                                         <option value=0>Selecciona la Colonia</option>
                                     </select>
+                                    <label class="error-message text-danger" th:if="${ErroresEditarDireccion != null} AND ${error.field == '${direcciones[0].colonia}' }" th:each="error:${ErroresEditarDireccion}"/>
                                 </div>
 
 
@@ -484,7 +496,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal" th:onclick="|cerrarModal(${Usuario.idUsuario})|">Cerrar</button>
 
                     </div>
                 </div>
@@ -680,9 +692,9 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                                         }
 
                                         function validarCalle(thisInput) {
-                                        const regExp = "/^(?!.*\.\.)(?!*\.$)[^\W][\w.]{0,29}$ /";
+                                        const regExp = /([^\u0000-\u0040\u005B-\u0060\u007B-\u00BF\u02B0-\u036F\u00D7\u00F7\u2000-\u2BFF])+/;
                                         let cadena = $(thisInput).val();
-                                        if (regExp.test(cadena)) {
+                                        if (regExp.test(cadena) && cadena.length < 40) {
                                         console.log("Calle valida");
                                         $(thisInput).removeClass("invalidText").addClass("correct");
                                         $("#calleMensaje").text("");
@@ -693,11 +705,11 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                                         $(thisInput).addClass("invalidText");
                                         $("#calleMensaje").text("Calle no valida");
                                         console.log("Correo no valido");
-                                        //                        setTimeout(() => {
-                                        //
-                                        //                        $("#emailMessage").text("");
-                                        ////                        $(thisInput).removeClass("invalidText");
-                                        //                        }, 5000);
+//                        setTimeout(() => {
+//
+//                        $("#emailMessage").text("");
+////                        $(thisInput).removeClass("invalidText");
+//                        }, 5000);
                                         }
                                         }
 
@@ -718,7 +730,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
             $("#btnSubImg").click();
             })
         </script>
-        <script>
+        <script th:inline="javascript">
 
                     const myModal = document.getElementById('my-Modal');
 //                    const myInput = document.getElementById('myInput')
@@ -740,6 +752,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
             } else {
 
             //ajax para manejra peticiones asincronas
+
             $.ajax({
 
             url: "http://localhost:8081/api/estado/pais/" + $("#ddlPais").val(), //url de la peticion
@@ -751,6 +764,10 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                     //vacia el ddl para que no se dupliquen al ejecutar varias veces la acción
                     $("#ddlEstado").empty();
                     $("#ddlEstado").append(" <option value=0>Selecciona un Estado</option>");
+//                    $("#ddlMunicipio").empty();
+//                    $("#ddlMunicipio").append(" <option value=0>Selecciona un Municipio</option>");
+//                    $("#ddlColonia").empty();
+//                    $("#ddlColonia").append(" <option value=0>Selecciona una Colonia</option>");
                     //itera sobre la lista de objetos y ejecuta la funcion de al lado
                     $.each(data.Object, function (i, estado) {
                     //En el input con el id: ddlEstado agrega una option con valores traidos de la petición
@@ -781,6 +798,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
             if ($("#ddlEstado").val() == 0) {
             $("#ddlMunicipio").empty();
+            $("#ddlMunicipio").val(0);
             $("#ddlMunicipio").append(" <option value=0>Selecciona un Municipio</option>");
             } else {
             $.ajax({
@@ -855,9 +873,9 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                     $.each(data.Object.direcciones, (i, direccion) => {
                     if (parseInt(direccion.idDireccion) === parseInt(idDireccion)) {
                     console.log(direccion.calle);
-                    $("#ddlEstado").empty();
-                    $("#ddlColonia").empty();
-                    $("#ddlMunicipio").empty();
+                    $("#ddlEstado").val("0");
+                    $("#ddlColonia").val("0");
+                    $("#ddlMunicipio").val("0");
                     $("#hiddenDirId").val(direccion.idDireccion);
                     $("#Dircalle").val(direccion.calle);
                     $("#noExterior").val(direccion.numeroExterior);
@@ -870,15 +888,23 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                     $("#ddlEstado").append("<option value=" + direccion.colonia.municipio.estado.idEstado + ">" + direccion.colonia.municipio.estado.nombre + "</option>");
                     $("#ddlEstado").val(direccion.colonia.municipio.estado.idEstado).attr("selected", true);
                     }
-                    if ($("#ddlEstado").val(direccion.colonia.municipio.estado.idEstado).length > 0) {
+//                    if ($("#ddlEstado").val(direccion.colonia.municipio.estado.idEstado) == 1) {
+
+//                    }
+                    if ($("#ddlColonia").children("option").length < 2){
                     $("#ddlColonia").append("<option value=" + direccion.colonia.idColonia + " >" + direccion.colonia.nombre + "</option>");
+                    }
                     $("#ddlColonia").val(direccion.colonia.idColonia);
-                    }
-                    console.log(idPais.length);
-//                                                            $("#ddlEstado").val(direccion.colonia.municipio.estado.idEstado);
+                    console.log($("#ddlMunicipio").children("option").length);
+                    if ($("#ddlMunicipio").children("option").length < 2){
                     $("#ddlMunicipio").append("<option value=" + direccion.colonia.municipio.idMunicipio + " >" + direccion.colonia.municipio.nombre + "</option>");
-                    $("#ddlMunicipio").val(direccion.colonia.municipio.idMunicipio);
                     }
+                    $("#ddlMunicipio").val(direccion.colonia.municipio.idMunicipio);
+//                    }
+
+                    }
+//                    console.log(idPais.length);
+//                                                            $("#ddlEstado").val(direccion.colonia.municipio.estado.idEstado);
 //                                                          $("#ddlEstado").empty();
 //                                                         $("#ddlColonia").empty();
                     });
@@ -891,6 +917,25 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
 
 
+
+
+
+
+        </script>
+
+        <script th:if="${ErroresDireccion == true}">
+            () => {
+
+                $("#ddlEstado").val("0");
+                $("#ddlColonia").val("0");
+                $("#ddlMunicipio").val("0");
+                $("#hiddenDirId").val("");
+                $("#Dircalle").val("");
+                $("#noExterior").val("");
+                $("#noInterior").val("");
+                $("#idCol").val("");
+                $("#ddlPais").val();
+            }
 
 
 
@@ -917,8 +962,9 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 //                cambiarEstado();
 //                cambiaMunicipio();
 //                $("#ddlEstado").append("<option value=" + estado.idEstado + ">" + estado.nombre + "</option>");
-//                $("#ddlColonia").append("<option value=" + colonia.idColonia + ">" + colonia.nombre + "</option>");
-//                $("#ddlMunicipio").append("<option value=" + municipio.idMunicipio + ">" + municipio.nombre + "</option>");
+            $("#ddlEstado").val(0);
+            $("#ddlColonia").val(0);
+            $("#ddlMunicipio").val("0");
             $("#hiddenDirId").val("0");
             }
         </script>
@@ -1005,14 +1051,11 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
             console.log(event.key);
             console.log(event.wich);
             if (event.key === 'Escape' || event.keyCode === 27){
-                location.reload();
+            location.reload();
             }
 
             });
             });
-
-
-
         </script>
 
         <!--        <script th:if="${Errores != null}" th:inline="javascript">
@@ -1034,10 +1077,10 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
         </script>
 
 
-<!--        <script th:if="${ErroresDireccion}">
-
-            $("#btnEditarUsuario").click();
-        </script>-->
+        <!--        <script th:if="${ErroresDireccion}">
+        
+                    $("#btnSubmitDireccion").click();
+                </script>-->
 
 
 

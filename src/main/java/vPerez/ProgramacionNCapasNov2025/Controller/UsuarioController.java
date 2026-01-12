@@ -193,16 +193,14 @@ public class UsuarioController {
 
         } else if ((usuario.getIdUsuario() > 0 && usuario.direcciones.get(0).getIdDireccion() > 0)) { // editar direccion
 
-            if (bindingResult.hasErrors()) {
+            if (bindingResult.getFieldError("direcciones[0].calle") != null || bindingResult.getFieldError("direcciones[0].numeroInterior") != null || bindingResult.getFieldError("direcciones[0].numeroExterior") != null) {
 
-                if (bindingResult.getFieldError("direcciones[0].calle") != null) {
+                redirectAttributes.addFlashAttribute("ErroresDireccion", true);
+                redirectAttributes.addFlashAttribute("Usuario", usuario);
+                System.out.println(bindingResult.getFieldErrors());
+                System.out.println(bindingResult.getAllErrors());
+                redirectAttributes.addFlashAttribute("ErroresEditarDireccion", bindingResult.getAllErrors());
 
-                    redirectAttributes.addFlashAttribute("ErrorDireccion", true);
-                    redirectAttributes.addFlashAttribute("Usuario", usuario);
-                    System.out.println(bindingResult.getFieldErrors());
-                    System.out.println(bindingResult.getAllErrors());
-                    redirectAttributes.addFlashAttribute("ErroresEditarDireccion", bindingResult.getAllErrors());
-                }
             } else {
                 RestTemplate restTemplate = new RestTemplate();
 
@@ -220,18 +218,29 @@ public class UsuarioController {
             return "redirect:/Usuario/detail/" + usuario.getIdUsuario();
 
         } else if ((usuario.getIdUsuario() > 0 && usuario.direcciones.get(0).getIdDireccion() == 0)) { // agregar direccion
-            RestTemplate restTemplate = new RestTemplate();
-            HttpEntity<Direccion> requestEntity = new HttpEntity<>(usuario.direcciones.get(0));
 
-            ResponseEntity<Result> response = restTemplate.exchange(url + "/direccion/agregar/" + usuario.getIdUsuario(),
-                    HttpMethod.POST,
-                    requestEntity,
-                    new ParameterizedTypeReference<Result>() {
-            });
-            return "redirect:/Usuario/detail/" + usuario.getIdUsuario();
+            if (bindingResult.getFieldError("direcciones[0].calle") != null || bindingResult.getFieldError("direcciones[0].numeroInterior") != null
+                    || bindingResult.getFieldError("direcciones[0].numeroExterior") != null) {
+
+                redirectAttributes.addFlashAttribute("ErroresDireccion", true);
+                redirectAttributes.addFlashAttribute("Usuario", usuario);
+                System.out.println(bindingResult.getFieldErrors());
+                System.out.println(bindingResult.getAllErrors());
+                redirectAttributes.addFlashAttribute("ErroresEditarDireccion", bindingResult.getAllErrors());
+                redirectAttributes.addFlashAttribute("ErroresAddDireccion", true);
+
+            } else {
+                RestTemplate restTemplate = new RestTemplate();
+                HttpEntity<Direccion> requestEntity = new HttpEntity<>(usuario.direcciones.get(0));
+
+                ResponseEntity<Result> response = restTemplate.exchange(url + "/direccion/agregar/" + usuario.getIdUsuario(),
+                        HttpMethod.POST,
+                        requestEntity,
+                        new ParameterizedTypeReference<Result>() {
+                });
+            }
         }
-
-        return "redirect:/Usuario";
+        return "redirect:/Usuario/detail/" + usuario.getIdUsuario();
     }
 
     @GetMapping("delete/{idUsuario}")
@@ -298,7 +307,8 @@ public class UsuarioController {
             user.direcciones = new ArrayList<>();
 //            user.direcciones.add(new Direccion());
             model.addAttribute("Usuario", user);
-        } else {
+        
+        }else {
             ResponseEntity<Result<Usuario>> response = restTemplate.exchange(url + "/usuarios/" + idUsuario,
                     HttpMethod.GET,
                     HttpEntity.EMPTY,

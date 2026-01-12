@@ -4,7 +4,7 @@
  */
 package vPerez.ProgramacionNCapasNov2025.ML;
 
-
+import jakarta.validation.constraints.NotNull;
 
 /**
  *
@@ -13,9 +13,11 @@ package vPerez.ProgramacionNCapasNov2025.ML;
 public class Colonia {
 
     private int idColonia;
+    @NotNull
     private String nombre;
     private String codigoPostal;
 //    Municipio municipio = new Municipio();
+    @NotNull(message = "Ingresa una direccion")
     public Municipio municipio;
 
     public int getIdColonia() {
